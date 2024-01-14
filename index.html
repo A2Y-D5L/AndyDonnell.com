@@ -93,6 +93,29 @@
             &copy; 2023 Andy Donnell. All Rights Reserved.
         </div>
     </footer>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const sections = document.querySelectorAll('main section');
+            const navLinks = document.querySelectorAll('nav ul li a');
+            const showSection = (hash) => {
+                sections.forEach(section => {
+                    section.style.display = section.id === hash ? 'block' : 'none';
+                });
+                navLinks.forEach(link => {
+                    link.classList.toggle('selected', '#' + section.id === hash);
+                });
+            };
+            showSection(window.location.hash.substring(1) || 'home');
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const hash = link.getAttribute('href').substring(1);
+                    showSection(hash);
+                    window.location.hash = hash;
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
