@@ -59,6 +59,18 @@ footer {
     margin: 0 auto;
 }
 
+.footer-content a {
+    display: flex;
+    align-items: center; 
+    text-decoration: none;
+    color: white;
+    margin: 0 5px;
+}
+
+.footer-content svg {
+    margin-right: 8px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     nav ul li {
