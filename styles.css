@@ -9,12 +9,18 @@
     --text-color: #e0e0e0;
     --link-color: #bb86fc;
     --link-hover-color: #9381ff;
+    --font-family-main: 'Arial', sans-serif;
+    --font-family-mono: 'Major Mono Display', monospace;
+    --font-family-default: monospace;
+    --base-padding: 10px;
+    --base-margin: 20px;
+    --border-radius: 3px;
 }
 
 body {
     margin: 0;
-    padding-bottom: 80px;
-    font-family: 'Arial', sans-serif;
+    padding: 0 0 80px;
+    font-family: var(--font-family-main);
     line-height: 1.6;
     background-color: var(--background-color);
     color: var(--text-color);
@@ -22,24 +28,24 @@ body {
     position: relative;
 }
 
-h1 {
-    margin: 0;
-    font-family: monospace;
-    color: var(--primary-color);
-}
-
+h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-    font-family: monospace;
+    font-family: var(--font-family-mono);
     color: var(--primary-color);
+}
+
+a,
+button,
+nav a {
+    font-family: var(--font-family-default);
 }
 
 a {
     color: var(--link-color);
-    font-family: monospace;
     text-decoration: none;
 }
 
@@ -51,9 +57,8 @@ button {
     background-color: var(--background-color);
     color: var(--primary-color);
     border: 1px solid var(--primary-color);
-    font-family: monospace;
-    border-radius: 5px;
-    padding: 5px;
+    border-radius: var(--border-radius);
+    padding: var(--base-padding);
     transition: background-color 0.3s, color 0.3s;
 }
 
@@ -62,35 +67,38 @@ button:hover {
     color: var(--background-color);
 }
 
-header {
+header,
+footer {
+    text-align: center;
+    padding: var(--base-padding) 20px;
+}
+
+footer {
     background-color: var(--secondary-bg-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 30px;
 }
 
 nav ul {
     list-style: none;
-    display: flex;
     margin: 0;
     padding: 0;
+    display: flex;
+    justify-content: center; /* Center items horizontally */
+    align-items: center; /* Align items vertically in the center */
+    flex-wrap: wrap; /* Allow items to wrap if space is insufficient */
 }
 
 nav ul li {
-    margin-right: 20px;
+    margin: 0 var(--base-margin) / 2; /* Even spacing on both sides */
 }
 
 nav a {
     text-decoration: none;
-    display: block;
-    background-color: var(--background-color);
     color: var(--primary-color);
     border: 1px solid var(--primary-color);
-    font-family: monospace;
-    border-radius: 5px;
-    padding: 10px 15px;
+    border-radius: var(--border-radius);
+    padding: var(--base-padding) 10px;
     transition: background-color 0.3s, color 0.3s;
+    background-color: var(--background-color);
 }
 
 nav a:hover {
@@ -104,22 +112,16 @@ nav a:active {
     color: var(--text-color);
 }
 
-/* Main Content */
 main {
     padding: 1rem;
     text-align: center;
 }
 
-/* Footer */
 footer {
-    background-color: var(--secondary-bg-color);
-    color: var(--text-color);
-    text-align: center;
     position: fixed;
     bottom: 0;
     width: 100%;
     z-index: 1000;
-    padding: 10px 10px;
 }
 
 .footer-content {
@@ -129,49 +131,38 @@ footer {
     flex-wrap: wrap;
     max-width: 960px;
     margin: 0 auto;
+    flex-direction: column;
 }
 
 .footer-content a {
     display: flex;
     align-items: center;
-    margin: 5px 10px;
+    margin: var(--base-padding) 10px;
 }
 
 .footer-content svg {
     margin-right: 8px;
 }
 
-.copyright {
-    font-family: monospace;
-}
-
-@media (max-width: 768px) {
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
     nav ul {
-        flex-direction: row;
         justify-content: center;
+        flex-wrap: nowrap; /* Prevent wrapping on larger screens */
     }
 
     nav ul li {
-        display: block;
-        margin: 5px 0;
-    }
-
-    header {
-        padding-bottom: 10px;
-    }
-
-    .footer-content {
-        flex-direction: column;
-        align-items: center;
+        margin: 0 var(--base-margin); /* Increased margin for larger screens */
     }
 }
 
-@media (max-width: 1024px) {
-    header {
-        padding: 20px;
+/* Large devices (desktops, 1024px and up) */
+@media (min-width: 1024px) {
+    header, footer {
+        padding: var(--base-padding) 30px; /* Override for larger screens */
     }
 
-    nav li {
-        margin: 0 15px;
+    nav ul li {
+        margin: 0 15px; /* Override for larger screens */
     }
 }
