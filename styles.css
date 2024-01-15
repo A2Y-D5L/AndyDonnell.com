@@ -132,7 +132,7 @@ footer {
     flex-wrap: wrap;
     max-width: 960px;
     margin: 0 auto;
-    flex-direction: column;
+    flex-direction: row;
 }
 
 .footer-content a {
