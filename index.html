@@ -50,8 +50,7 @@
         }
 
         a,
-        button,
-        nav a {
+        button {
             font-family: var(--font-family-default);
         }
 
@@ -82,41 +81,6 @@
         footer {
             text-align: center;
             padding: var(--base-padding) 20px;
-        }
-
-        nav ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        nav ul li {
-            margin: 0 var(--base-margin) / 2;
-        }
-
-        nav a {
-            text-decoration: none;
-            color: var(--primary-color);
-            border: 1px solid var(--primary-color);
-            border-radius: var(--border-radius);
-            padding: var(--base-padding) 10px;
-            transition: background-color 0.3s, color 0.3s;
-            background-color: var(--background-color);
-        }
-
-        nav a:hover {
-            background-color: var(--primary-color);
-            color: var(--background-color);
-        }
-
-        nav a.selected,
-        nav a:active {
-            background-color: var(--link-color);
-            color: var(--text-color);
         }
 
         main {
@@ -151,6 +115,55 @@
 
         .footer-content svg {
             margin-right: 8px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .view-source-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .view-source-button svg {
+            fill: var(--primary-color);
+        }
+
+        .view-source-button:hover svg {
+            fill: var(--background-color);
         }
 
         /* Medium devices (tablets, 768px and up) */
@@ -216,7 +229,7 @@
                 <section id="projects" hidden>
                     <h2>Projects </h2>
                     <div id="projects-container">
-                        <!-- Render projects from GitHub here -->
+                        <!-- GitHub projects written here -->
                     </div>
                 </section>
 
@@ -282,49 +295,19 @@
                 </section>
             </main>
         </div>
-        <script>
-            let projectsLoaded = false;
-            function showSection(sectionId) {
-                // Hide all sections
-                document.querySelectorAll('main section').forEach(section => {
-                    section.hidden = true;
-                });
-
-                // Show the selected section
-                document.getElementById(sectionId).hidden = false;
-
-                // Load projects if the section is 'projects' and they haven't been loaded yet
-                if (sectionId === 'projects' && !projectsLoaded) {
-                    loadProjects();
-                    projectsLoaded = true;
-                }
-            }
-            function loadProjects() {
-                fetch('https://api.github.com/users/a2y-d5l/repos')
-                    .then(response => response.json())
-                    .then(data => {
-                        const projectsContainer = document.getElementById('projects-container');
-                        data.forEach(repo => {
-                            const repoElement = document.createElement('div');
-                            repoElement.className = 'repo';
-                            repoElement.innerHTML = `
-                            <h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3>
-                            <p>${repo.description || 'No description available'}</p>
-                        `;
-                            projectsContainer.appendChild(repoElement);
-                        });
-                    })
-                    .catch(error => console.error('Error fetching GitHub repos:', error));
-            }
-        </script>
         <footer>
+            <button id="viewSourceCodeBtn"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24">
+                    <path fill="var(--background-color)"
+                        d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1 10.199l-3.64 1.801 3.64 1.796v2.204l-6-2.935v-2.131l6-2.934v2.199zm8 2.866l-6 2.935v-2.204l3.64-1.796-3.64-1.801v-2.199l6 2.935v2.13z" />
+                </svg>View Source Code</button>
+            <div id="sourceCodeModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-button" onclick="toggleModal(false)">&times;</span>
+                    <pre><code id="sourceCode" class="language-markup"></code></pre>
+                </div>
+            </div>
             <div class="footer-content">
-                <a href="https://github.com/A2Y-D5L/AndyDonnell.com" title="View the source code for this site">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                        <path fill="var(--primary-color)"
-                            d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1 10.199l-3.64 1.801 3.64 1.796v2.204l-6-2.935v-2.131l6-2.934v2.199zm8 2.866l-6 2.935v-2.204l3.64-1.796-3.64-1.801v-2.199l6 2.935v2.13z" />
-                    </svg> AndyDonnell.com Source Code
-                </a>
                 <a href="https://www.linkedin.com/in/andydonnell/">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                         <path fill="var(--primary-color)"
@@ -342,7 +325,67 @@
                 &copy; 2023 Andy Donnell. All Rights Reserved.
             </div>
         </footer>
+
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/prism.js"></script>
+    <script>
+        let projectsLoaded = false;
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('main section').forEach(section => {
+                section.hidden = true;
+            });
+
+            // Show the selected section
+            document.getElementById(sectionId).hidden = false;
+
+            // Load projects if the section is 'projects' and they haven't been loaded yet
+            if (sectionId === 'projects' && !projectsLoaded) {
+                loadProjects();
+                projectsLoaded = true;
+            }
+        }
+        function loadProjects() {
+            fetch('https://api.github.com/users/a2y-d5l/repos')
+                .then(response => response.json())
+                .then(data => {
+                    const projectsContainer = document.getElementById('projects-container');
+                    data.forEach(repo => {
+                        const repoElement = document.createElement('div');
+                        repoElement.className = 'repo';
+                        repoElement.innerHTML = `
+                        <h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3>
+                        <p>${repo.description || 'No description available'}</p>
+                    `;
+                        projectsContainer.appendChild(repoElement);
+                    });
+                })
+                .catch(error => console.error('Error fetching GitHub repos:', error));
+        }
+        async function fetchSourceCode() {
+            const url = 'http://www.AndyDonnell.com/index.html';
+            try {
+                const response = await fetch(url);
+                return await response.text();
+            } catch (error) {
+                console.error('Error fetching source code:', error);
+            }
+        }
+
+        function toggleModal(show) {
+            const modal = document.getElementById('sourceCodeModal');
+            modal.style.display = show ? 'block' : 'none';
+        }
+
+        async function showSourceCode() {
+            const sourceCode = await fetchSourceCode();
+            const formattedCode = Prism.highlight(sourceCode, Prism.languages.markup, 'markup');
+            document.getElementById('sourceCode').innerHTML = formattedCode;
+            toggleModal(true);
+        }
+
+        document.getElementById('yourButtonId').addEventListener('click', showSourceCode);
+    </script>
 </body>
 
 </html>
