@@ -46,7 +46,9 @@
 
         <section id="projects" hidden>
             <h2>Projects </h2>
-            <p>Want to get in touch? Find out how to contact me here.</p>
+        <div id="projects-container">
+            <!-- Render projects from GitHub here -->
+        </div>
         </section>
 
         <section id="resume" hidden>
@@ -92,6 +94,7 @@
     </main>
     </div>
     <script>
+        let projectsLoaded = false;
         function showSection(sectionId) {
             // Hide all sections
             document.querySelectorAll('main section').forEach(section => {
@@ -100,6 +103,29 @@
 
             // Show the selected section
             document.getElementById(sectionId).hidden = false;
+
+            // Load projects if the section is 'projects' and they haven't been loaded yet
+            if (sectionId === 'projects' && !projectsLoaded) {
+                loadProjects();
+                projectsLoaded = true;
+            }
+        }
+        function loadProjects() {
+            fetch('https://api.github.com/users/a2y-d5l/repos')
+                .then(response => response.json())
+                .then(data => {
+                    const projectsContainer = document.getElementById('projects-container');
+                    data.forEach(repo => {
+                        const repoElement = document.createElement('div');
+                        repoElement.className = 'repo';
+                        repoElement.innerHTML = `
+                            <h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3>
+                            <p>${repo.description || 'No description available'}</p>
+                        `;
+                        projectsContainer.appendChild(repoElement);
+                    });
+                })
+                .catch(error => console.error('Error fetching GitHub repos:', error));
         }
     </script>
     <footer>
