@@ -11,149 +11,338 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Besley:ital,wght@0,400;0,700;1,400;1,700&family=Major+Mono+Display&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root {
+            --primary-color: #6fcf6f;
+            --secondary-color: #c4c4c4;
+            --background-color: #000;
+            --text-color: #e0e0e0;
+            --link-color: #bb86fc;
+            --link-hover-color: #9381ff;
+            --font-family-main: 'Arial', sans-serif;
+            --font-family-mono: 'Major Mono Display', monospace;
+            --font-family-default: monospace;
+            --base-padding: 10px;
+            --base-margin: 20px;
+            --border-radius: 3px;
+        }
+
+        body {
+            margin: 0;
+            padding: 0 0 80px;
+            font-family: var(--font-family-main);
+            line-height: 1.6;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        h1 a {
+            font-family: var(--font-family-mono);
+            color: var(--primary-color);
+        }
+
+        a,
+        button,
+        nav a {
+            font-family: var(--font-family-default);
+        }
+
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        button {
+            background-color: var(--background-color);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            padding: var(--base-padding);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+        }
+
+        header,
+        footer {
+            text-align: center;
+            padding: var(--base-padding) 20px;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        nav ul li {
+            margin: 0 var(--base-margin) / 2;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            padding: var(--base-padding) 10px;
+            transition: background-color 0.3s, color 0.3s;
+            background-color: var(--background-color);
+        }
+
+        nav a:hover {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+        }
+
+        nav a.selected,
+        nav a:active {
+            background-color: var(--link-color);
+            color: var(--text-color);
+        }
+
+        main {
+            padding: 1rem;
+            text-align: center;
+        }
+
+        footer {
+            background-color: var(--background-color);
+            border-top: 1px solid var(--primary-color);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            max-width: 960px;
+            margin: 0 auto;
+            flex-direction: row;
+        }
+
+        .footer-content a {
+            display: flex;
+            align-items: center;
+            margin: var(--base-padding) 10px;
+        }
+
+        .footer-content svg {
+            margin-right: 8px;
+        }
+
+        /* Medium devices (tablets, 768px and up) */
+        @media (min-width: 768px) {
+            nav ul {
+                justify-content: center;
+                flex-wrap: nowrap;
+            }
+
+            nav ul li {
+                margin: 0 var(--base-margin);
+            }
+        }
+
+        /* Large devices (desktops, 1024px and up) */
+        @media (min-width: 1024px) {
+
+            header,
+            footer {
+                padding: var(--base-padding) 30px;
+            }
+
+            nav ul li {
+                margin: 0 15px;
+            }
+        }
+    </style>
 </head>
+
 
 <body>
     <div class="page-container">
-    <div class="content-wrap">
-<main>
-    <header>
-        <h1><a onclick="showSection('home')">AndyDonnell</a></h1>
-        <nav>
-            <ul>
-                <li>
-                    <button onclick="showSection('blog')" title="My thoughts, insights, and ramblings.">Blog</button>
-                </li>
-                <li>
-                    <button onclick="showSection('projects')"
-                        title="Want to get in touch? Find out how to contact me here.">Projects</button>
-                </li>
-                <li>
-                    <button onclick="showSection('resume')" title="Who the heck is Andy Donnell?">Career</button>
-                </li>
-            </ul>
-        </nav>
-    </header>
-        <section id="home">
-            <p>Welcome to the homepage! This is where you'll find an overview of everything.</p>
-        </section>
+        <div class="content-wrap">
+            <main>
+                <header>
+                    <h1><a onclick="showSection('home')">AndyDonnell</a></h1>
+                    <nav>
+                        <ul>
+                            <li>
+                                <button onclick="showSection('blog')"
+                                    title="My thoughts, insights, and ramblings.">Blog</button>
+                            </li>
+                            <li>
+                                <button onclick="showSection('projects')"
+                                    title="Want to get in touch? Find out how to contact me here.">Projects</button>
+                            </li>
+                            <li>
+                                <button onclick="showSection('resume')"
+                                    title="Who the heck is Andy Donnell?">Career</button>
+                            </li>
+                        </ul>
+                    </nav>
+                </header>
+                <section id="home">
+                    <p>Welcome to the homepage! This is where you'll find an overview of everything.</p>
+                </section>
 
-        <section id="blog" hidden>
-            <h2>Blog</h2>
-            <p>Read my personal thoughts, insights, and ramblings.</p>
-        </section>
+                <section id="blog" hidden>
+                    <h2>Blog</h2>
+                    <p>Read my personal thoughts, insights, and ramblings.</p>
+                </section>
 
-        <section id="projects" hidden>
-            <h2>Projects </h2>
-        <div id="projects-container">
-            <!-- Render projects from GitHub here -->
+                <section id="projects" hidden>
+                    <h2>Projects </h2>
+                    <div id="projects-container">
+                        <!-- Render projects from GitHub here -->
+                    </div>
+                </section>
+
+                <section id="resume" hidden>
+                    <h2>My Career Journey</h2>
+                    <article>
+                        <h3>Military Background</h3>
+                        <p>My journey has led me from the U.S. Army to the forefront of technology. In the Army, serving
+                            as a
+                            Satellite Communications Technician and Team Leader at Fort Drum, New York from 2008 to
+                            2012, I
+                            mastered the intricacies of mobile satellite communications and network coordination. This
+                            role
+                            involved handling a mobile satcom terminal and interfacing with a mobile networking hub to
+                            ensure
+                            seamless connectivity for tactical operations. My time in the military was more than just
+                            about
+                            discipline; it was about honing technical and leadership skills under challenging
+                            conditions.</p>
+
+                        <h3>Academic Achievements</h3>
+                        <p>Following my military service, I pursued academic interests at Harrisburg University of
+                            Science &
+                            Technology, earning a B.S. in Computer & Information Science, graduating Cum Laude. My
+                            university
+                            years were an immersive exploration into the world of computer science, forming a solid
+                            foundation
+                            for my technology career.</p>
+
+                        <h3>Professional Experience</h3>
+                        <h4>Elsevier</h4>
+                        <p>My professional journey in software engineering began at Elsevier in Philadelphia. As a
+                            Software
+                            Engineer, I was deeply involved in full-stack web development for an authoring workflow
+                            system used
+                            in clinical medicine. Utilizing Java and Spring for backend development, and JavaScript with
+                            ExtJS
+                            for the frontend, I contributed to enhancing the efficiency and functionality of the system,
+                            significantly impacting the way clinical experts author, review, and approve evidence-based
+                            guidance.</p>
+
+                        <h4>Vanguard</h4>
+                        <p>At The Vanguard Group, my role evolved, leading me to spearhead the development of a
+                            web-based tool
+                            for back-office staff. This project involved creating a system for reconciling transaction
+                            errors
+                            and providing comprehensive dashboards and reporting tools for retail money movement. Here,
+                            my
+                            toolkit expanded to include Java for backend microservices, hosted on ECS, and DynamoDB for
+                            database
+                            management. My efforts not only optimized processes but also brought about a significant
+                            reduction
+                            in processing time and bolstered security, earning me recognition and awards.</p>
+
+                        <h4>Macquarie Group</h4>
+                        <p>Today, at The Macquarie Group, I’m harnessing my extensive experience to lead and innovate in
+                            new
+                            technological ventures. My career is a testament to continuous learning and excellence, with
+                            each
+                            role contributing significantly to my expertise in managing and implementing cutting-edge
+                            technology
+                            solutions.</p>
+                </section>
+            </main>
         </div>
-        </section>
+        <script>
+            let projectsLoaded = false;
+            function showSection(sectionId) {
+                // Hide all sections
+                document.querySelectorAll('main section').forEach(section => {
+                    section.hidden = true;
+                });
 
-        <section id="resume" hidden>
-            <h2>My Career Journey</h2>
-            <article>
-                <h3>Military Background</h3>
-                <p>My journey has led me from the U.S. Army to the forefront of technology. In the Army, serving as a
-                    Satellite Communications Technician and Team Leader at Fort Drum, New York from 2008 to 2012, I
-                    mastered the intricacies of mobile satellite communications and network coordination. This role
-                    involved handling a mobile satcom terminal and interfacing with a mobile networking hub to ensure
-                    seamless connectivity for tactical operations. My time in the military was more than just about
-                    discipline; it was about honing technical and leadership skills under challenging conditions.</p>
+                // Show the selected section
+                document.getElementById(sectionId).hidden = false;
 
-                <h3>Academic Achievements</h3>
-                <p>Following my military service, I pursued academic interests at Harrisburg University of Science &
-                    Technology, earning a B.S. in Computer & Information Science, graduating Cum Laude. My university
-                    years were an immersive exploration into the world of computer science, forming a solid foundation
-                    for my technology career.</p>
-
-                <h3>Professional Experience</h3>
-                <h4>Elsevier</h4>
-                <p>My professional journey in software engineering began at Elsevier in Philadelphia. As a Software
-                    Engineer, I was deeply involved in full-stack web development for an authoring workflow system used
-                    in clinical medicine. Utilizing Java and Spring for backend development, and JavaScript with ExtJS
-                    for the frontend, I contributed to enhancing the efficiency and functionality of the system,
-                    significantly impacting the way clinical experts author, review, and approve evidence-based
-                    guidance.</p>
-
-                <h4>Vanguard</h4>
-                <p>At The Vanguard Group, my role evolved, leading me to spearhead the development of a web-based tool
-                    for back-office staff. This project involved creating a system for reconciling transaction errors
-                    and providing comprehensive dashboards and reporting tools for retail money movement. Here, my
-                    toolkit expanded to include Java for backend microservices, hosted on ECS, and DynamoDB for database
-                    management. My efforts not only optimized processes but also brought about a significant reduction
-                    in processing time and bolstered security, earning me recognition and awards.</p>
-
-                <h4>Macquarie Group</h4>
-                <p>Today, at The Macquarie Group, I’m harnessing my extensive experience to lead and innovate in new
-                    technological ventures. My career is a testament to continuous learning and excellence, with each
-                    role contributing significantly to my expertise in managing and implementing cutting-edge technology
-                    solutions.</p>
-        </section>
-    </main>
-    </div>
-    <script>
-        let projectsLoaded = false;
-        function showSection(sectionId) {
-            // Hide all sections
-            document.querySelectorAll('main section').forEach(section => {
-                section.hidden = true;
-            });
-
-            // Show the selected section
-            document.getElementById(sectionId).hidden = false;
-
-            // Load projects if the section is 'projects' and they haven't been loaded yet
-            if (sectionId === 'projects' && !projectsLoaded) {
-                loadProjects();
-                projectsLoaded = true;
+                // Load projects if the section is 'projects' and they haven't been loaded yet
+                if (sectionId === 'projects' && !projectsLoaded) {
+                    loadProjects();
+                    projectsLoaded = true;
+                }
             }
-        }
-        function loadProjects() {
-            fetch('https://api.github.com/users/a2y-d5l/repos')
-                .then(response => response.json())
-                .then(data => {
-                    const projectsContainer = document.getElementById('projects-container');
-                    data.forEach(repo => {
-                        const repoElement = document.createElement('div');
-                        repoElement.className = 'repo';
-                        repoElement.innerHTML = `
+            function loadProjects() {
+                fetch('https://api.github.com/users/a2y-d5l/repos')
+                    .then(response => response.json())
+                    .then(data => {
+                        const projectsContainer = document.getElementById('projects-container');
+                        data.forEach(repo => {
+                            const repoElement = document.createElement('div');
+                            repoElement.className = 'repo';
+                            repoElement.innerHTML = `
                             <h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3>
                             <p>${repo.description || 'No description available'}</p>
                         `;
-                        projectsContainer.appendChild(repoElement);
-                    });
-                })
-                .catch(error => console.error('Error fetching GitHub repos:', error));
-        }
-    </script>
-    <footer>
-        <div class="footer-content">
-            <a href="https://github.com/A2Y-D5L/AndyDonnell.com" title="View the source code for this site">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                    <path fill="var(--primary-color)"
-                        d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1 10.199l-3.64 1.801 3.64 1.796v2.204l-6-2.935v-2.131l6-2.934v2.199zm8 2.866l-6 2.935v-2.204l3.64-1.796-3.64-1.801v-2.199l6 2.935v2.13z" />
-                </svg> View Source Code
-            </a>
-            <a href="https://www.linkedin.com/in/andydonnell/">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                    <path fill="var(--primary-color)"
-                        d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2 16h-2v-6h2v6zm-1-6.891c-.607 0-1.1-.496-1.1-1.109 0-.612.492-1.109 1.1-1.109s1.1.497 1.1 1.109c0 .613-.493 1.109-1.1 1.109zm8 6.891h-1.998v-2.861c0-1.881-2.002-1.722-2.002 0v2.861h-2v-6h2v1.093c.872-1.616 4-1.736 4 1.548v3.359z" />
-                </svg> Connect on LinkedIn
-            </a>
-            <a href="https://github.com/a2y-d5l">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                    <path fill="var(--primary-color)"
-                        d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                </svg> Check out my GitHub
-            </a>
-        </div>
-        <div class="copyright">
-            &copy; 2023 Andy Donnell. All Rights Reserved.
-        </div>
-    </footer>
-</div>
+                            projectsContainer.appendChild(repoElement);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching GitHub repos:', error));
+            }
+        </script>
+        <footer>
+            <div class="footer-content">
+                <a href="https://github.com/A2Y-D5L/AndyDonnell.com" title="View the source code for this site">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="var(--primary-color)"
+                            d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1 10.199l-3.64 1.801 3.64 1.796v2.204l-6-2.935v-2.131l6-2.934v2.199zm8 2.866l-6 2.935v-2.204l3.64-1.796-3.64-1.801v-2.199l6 2.935v2.13z" />
+                    </svg> AndyDonnell.com Source Code
+                </a>
+                <a href="https://www.linkedin.com/in/andydonnell/">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="var(--primary-color)"
+                            d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2 16h-2v-6h2v6zm-1-6.891c-.607 0-1.1-.496-1.1-1.109 0-.612.492-1.109 1.1-1.109s1.1.497 1.1 1.109c0 .613-.493 1.109-1.1 1.109zm8 6.891h-1.998v-2.861c0-1.881-2.002-1.722-2.002 0v2.861h-2v-6h2v1.093c.872-1.616 4-1.736 4 1.548v3.359z" />
+                    </svg> Connect on LinkedIn
+                </a>
+                <a href="https://github.com/a2y-d5l">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="var(--primary-color)"
+                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                    </svg> Check out my GitHub
+                </a>
+            </div>
+            <div class="copyright">
+                &copy; 2023 Andy Donnell. All Rights Reserved.
+            </div>
+        </footer>
+    </div>
 </body>
 
 </html>
