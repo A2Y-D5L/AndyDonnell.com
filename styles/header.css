@@ -1,0 +1,37 @@
+/* header.css */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: #000;
+    border-bottom: 1px solid var(--primary-color);
+}
+
+header a {
+    font-family: var(--font-family-mono);
+    color: var(--primary-color);
+}
+
+header a:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+nav {
+    padding-bottom: 10px;
+}
+
+nav button {
+    font-family: var(--font-family-default);
+    cursor: pointer;
+    background-color: var(--background-color);
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+nav button:hover {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+}

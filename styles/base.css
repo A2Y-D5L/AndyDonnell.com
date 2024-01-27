@@ -1,0 +1,51 @@
+:root {
+    --primary-color: #6fcf6f;
+    --secondary-color: #c4c4c4;
+    --background-color: #000;
+    --text-color: #e0e0e0;
+    --link-color: #bb86fc;
+    --link-hover-color: #9381ff;
+    --font-family-main: 'Arial', sans-serif;
+    --font-family-mono: 'Major Mono Display', monospace;
+    --font-family-default: monospace;
+}
+html {
+    background-color: var(--background-color);
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-family-main);
+    color: var(--text-color);
+    min-height: 100vh;
+    position: relative;
+    text-align: center;
+}
+
+main {
+    padding: 20px;
+    margin-top: px;
+    margin-bottom: 25px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-family-mono);
+    color: var(--primary-color);
+}
+
+a {
+    font-family: var(--font-family-default);
+    cursor: pointer;
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--link-hover-color);
+    text-decoration: underline;
+}
