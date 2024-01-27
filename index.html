@@ -18,89 +18,16 @@
 
 <body>
     <header>
-        <a class="page-title" onclick="showSection('home')">AndyDonnell</a>
+        <a class="page-title" onclick="renderPage('home')">AndyDonnell</a>
         <nav>
-            <button onclick="showSection('blog')">Blog</button>
-            <button onclick="showSection('projects')">Projects</button>
-            <button onclick="showSection('resume')">Career</button>
+            <button onclick="renderPage('blog')">Blog</button>
+            <button onclick="renderPage('projects')">Projects</button>
+            <button onclick="renderPage('resume')">Career</button>
         </nav>
     </header>
     <main>
-        <section id="home">
-            <p>Welcome to the homepage! This is where you'll find an overview of everything.</p>
-        </section>
-
-        <section id="blog" hidden>
-            <h2>Blog</h2>
-            <p>Read my personal thoughts, insights, and ramblings.</p>
-        </section>
-
-        <section id="projects" hidden>
-            <h2>Projects </h2>
-            <div id="projects-container">
-                <!-- GitHub projects written here -->
-            </div>
-        </section>
-
-        <section id="resume" hidden>
-            <h2>My Career Journey</h2>
-            <article>
-                <h3>Military Background</h3>
-                <p>My journey has led me from the U.S. Army to the forefront of technology. In the Army, serving
-                    as a
-                    Satellite Communications Technician and Team Leader at Fort Drum, New York from 2008 to
-                    2012, I
-                    mastered the intricacies of mobile satellite communications and network coordination. This
-                    role
-                    involved handling a mobile satcom terminal and interfacing with a mobile networking hub to
-                    ensure
-                    seamless connectivity for tactical operations. My time in the military was more than just
-                    about
-                    discipline; it was about honing technical and leadership skills under challenging
-                    conditions.</p>
-
-                <h3>Academic Achievements</h3>
-                <p>Following my military service, I pursued academic interests at Harrisburg University of
-                    Science &
-                    Technology, earning a B.S. in Computer & Information Science, graduating Cum Laude. My
-                    university
-                    years were an immersive exploration into the world of computer science, forming a solid
-                    foundation
-                    for my technology career.</p>
-
-                <h3>Professional Experience</h3>
-                <h4>Elsevier</h4>
-                <p>My professional journey in software engineering began at Elsevier in Philadelphia. As a
-                    Software
-                    Engineer, I was deeply involved in full-stack web development for an authoring workflow
-                    system used
-                    in clinical medicine. Utilizing Java and Spring for backend development, and JavaScript with
-                    ExtJS
-                    for the frontend, I contributed to enhancing the efficiency and functionality of the system,
-                    significantly impacting the way clinical experts author, review, and approve evidence-based
-                    guidance.</p>
-
-                <h4>Vanguard</h4>
-                <p>At The Vanguard Group, my role evolved, leading me to spearhead the development of a
-                    web-based tool
-                    for back-office staff. This project involved creating a system for reconciling transaction
-                    errors
-                    and providing comprehensive dashboards and reporting tools for retail money movement. Here,
-                    my
-                    toolkit expanded to include Java for backend microservices, hosted on ECS, and DynamoDB for
-                    database
-                    management. My efforts not only optimized processes but also brought about a significant
-                    reduction
-                    in processing time and bolstered security, earning me recognition and awards.</p>
-
-                <h4>Macquarie Group</h4>
-                <p>Today, at The Macquarie Group, I’m harnessing my extensive experience to lead and innovate in
-                    new
-                    technological ventures. My career is a testament to continuous learning and excellence, with
-                    each
-                    role contributing significantly to my expertise in managing and implementing cutting-edge
-                    technology
-                    solutions.</p>
+        <section id="selected-page">
+            <p>⚠️ Home Page Under Construction ⚠️</p>
         </section>
     </main>
     <footer>
@@ -119,41 +46,8 @@
             </a>
         </div>
     </footer>
-    <script>
-        let projectsLoaded = false;
-        function showSection(sectionId) {
-            // Hide all sections
-            document.querySelectorAll('main section').forEach(section => {
-                section.hidden = true;
-            });
-
-            // Show the selected section
-            document.getElementById(sectionId).hidden = false;
-
-            // Load projects if the section is 'projects' and they haven't been loaded yet
-            if (sectionId === 'projects' && !projectsLoaded) {
-                loadProjects();
-                projectsLoaded = true;
-            }
-        }
-        function loadProjects() {
-            fetch('https://api.github.com/users/a2y-d5l/repos')
-                .then(response => response.json())
-                .then(data => {
-                    const projectsContainer = document.getElementById('projects-container');
-                    data.forEach(repo => {
-                        const repoElement = document.createElement('div');
-                        repoElement.className = 'repo';
-                        repoElement.innerHTML = `
-                        <h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3>
-                        <p>${repo.description || 'No description available'}</p>
-                    `;
-                        projectsContainer.appendChild(repoElement);
-                    });
-                })
-                .catch(error => console.error('Error fetching GitHub repos:', error));
-        }
-    </script>
+    <script src="scripts/resizeTitle.js"></script>
+    <script src="scripts/renderPage.js"></script>
 </body>
 
 </html>
