@@ -5,7 +5,7 @@ async function renderPage(page) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const content = await response.text();
-        if (page === 'projects') {
+        if (page === 'home') {
             fetch('https://api.github.com/users/a2y-d5l/repos')
                 .then(response => response.json())
                 .then(data => {
