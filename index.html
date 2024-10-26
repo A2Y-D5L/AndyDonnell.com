@@ -19,17 +19,13 @@
 <body>
     <header>
         <a class="page-title" onclick="renderPage('home')">AndyDonnell</a>
-        <nav>
-            <button onclick="renderPage('blog')">Blog</button>
-            <button onclick="renderPage('resume')">Career</button>
-        </nav>
     </header>
     <main>
         <section id="selected-page">
-            <h2>Projects </h2>
-            <div id="projects-container">
-                <!-- GitHub projects written here -->
-            </div>
+            <h2>Projects /h2>
+                <div id="projects-container">
+                    <!-- GitHub projects written here -->
+                </div>
         </section>
     </main>
     <footer>
@@ -48,6 +44,12 @@
             </a>
         </div>
     </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            renderGithubRepos();
+        });
+    </script>
+    </script>
     <script src="scripts/resizeTitle.js"></script>
     <script src="scripts/renderPage.js"></script>
 </body>
