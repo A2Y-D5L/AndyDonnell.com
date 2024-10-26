@@ -1,3 +1,7 @@
+async function loadBlogPage() {
+    try {
+        document.getElementById('page').innerHTML = `
+
 <h2>My Career Journey</h2>
 <article>
     <h3>Military Background</h3>
@@ -56,3 +60,8 @@
         role contributing significantly to my expertise in managing and implementing cutting-edge
         technology
         solutions.</p>
+`;
+    } catch (error) {
+        console.error('Error loading page:', error);
+    }
+}

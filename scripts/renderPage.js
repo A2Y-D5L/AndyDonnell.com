@@ -1,9 +1,8 @@
-let projectsLoaded = false;
-let projectsContainer = document.getElementById('projects-container');
 
-async function renderPage(page) {
+async function renderPage(pageName) {
     try {
-        const response = await fetch(`../pages/${page}.html`);
+
+        const response = await fetch(`../pages/${pageName}.html`);
         if (!response.ok) {
             throw new Error(`Request failed: ${response.status} ${response.statusText}`);
         }
