@@ -1,5 +1,7 @@
-let repos = [];
-async function homePage() {
+import { createRepoDiv, loadGithubRepos } from '../github/repos.js';
+
+export let repos = [];
+export async function homePage() {
 	const repoList = document.createElement('div');
 	repoList.id = 'repo-list';
 	if (!repos.length) {

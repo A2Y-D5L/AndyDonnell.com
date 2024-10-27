@@ -1,4 +1,8 @@
-async function loadPage(name) {
+import { homePage } from './page_home.js';
+import { blogPage } from './page_blog.js';
+import { careerPage } from './page_career.js';
+
+export async function loadPage(name) {
 	try {
 		let main = document.getElementById('main');
 		if (!main) {

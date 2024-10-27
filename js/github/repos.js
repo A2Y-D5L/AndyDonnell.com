@@ -1,7 +1,7 @@
 const gitHubReposCacheKey = 'a2yd5lGithubReposCache';
 const githubAPIReposURL = 'https://api.github.com/users/a2y-d5l/repos';
 
-async function fetchGithubRepos() {
+export async function fetchGithubRepos() {
 	try {
 		const response = await fetch(githubAPIReposURL);
 		if (!response.ok) {
@@ -19,7 +19,8 @@ async function fetchGithubRepos() {
 		return [];
 	}
 }
-async function loadGithubRepos() {
+
+export async function loadGithubRepos() {
 	try {
 		const cachedData = localStorage.getItem(gitHubReposCacheKey);
 		const cacheDuration = 24 * 60 * 60 * 1000; // 24 hours
@@ -38,7 +39,7 @@ async function loadGithubRepos() {
 }
 
 
-function createRepoDiv(repo) {
+export function createRepoDiv(repo) {
 	const repoElement = document.createElement('div');
 	repoElement.className = 'repo';
 	repoElement.innerHTML = `

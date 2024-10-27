@@ -1,4 +1,4 @@
-function adjustTitleSize() {
+export function adjustTitleSize() {
     const pageTitle = document.querySelector('.page-title');
     const header = document.querySelector('header');
     let headerWidth = header.offsetWidth;
@@ -6,6 +6,3 @@ function adjustTitleSize() {
 
     pageTitle.style.fontSize = `${fontSize}px`;
 }
-
-window.addEventListener('resize', adjustTitleSize);
-document.addEventListener('DOMContentLoaded', adjustTitleSize);

@@ -1,4 +1,4 @@
-function blogPage() {
+export function blogPage() {
 	return `<h2>Blog</h2>
 		<p>
 			🦗🦗🦗🦗🦗🦗🦗🦗🦗🦗🦗🦗🦗🦗🦗🦗🦗🦗🦗🦗<br>

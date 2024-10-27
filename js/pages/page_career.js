@@ -1,4 +1,4 @@
-async function careerPage() {
+export async function careerPage() {
     return `<h2>My Career Journey</h2>
         <article>
             <h3>Military Background</h3>
