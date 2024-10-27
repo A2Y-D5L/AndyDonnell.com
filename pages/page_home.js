@@ -1,7 +1,11 @@
-async function loadHomePage() {
-	try {
-		
-	} catch (error) {
-		console.error('Error loading page:', error);
-	}
+
+const repoList = document.createElement('div');
+repoList.id = 'repo-list';
+const repos = await loadGithubRepos()
+repos.forEach(repo => {
+	repoList.appendChild(createRepoDiv(repo));
+});
+async function homePage() {
+	return `<h2>Projects</h2>
+		${repoList.outerHTML}`;
 }

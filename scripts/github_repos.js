@@ -9,17 +9,34 @@ async function fetchGithubRepos() {
 		}
 		const repos = await response.json();
 		// Store the fetched repos and timestamp in local storage
-		const cacheData = {
+		localStorage.setItem(gitHubReposCacheKey, JSON.stringify({
 			timestamp: Date.now(),
 			repos: repos
-		};
-		localStorage.setItem(gitHubReposCacheKey, JSON.stringify(cacheData));
+		}));
 		return repos;
 	} catch (error) {
 		console.error('Error fetching GitHub repositories:', error);
 		return [];
 	}
 }
+async function loadGithubRepos() {
+	try {
+		const cachedData = localStorage.getItem(gitHubReposCacheKey);
+		const cacheDuration = 24 * 60 * 60 * 1000; // 24 hours
+		if (cachedData) {
+			const parsedData = JSON.parse(cachedData);
+			if (Date.now() - parsedData.timestamp > cacheDuration) {
+				return await fetchGithubRepos();
+			}
+			return parsedData.repos;
+		}
+		return await fetchGithubRepos();
+	} catch (error) {
+		console.error('Error fetching GitHub repositories:', error);
+		return [];
+	}
+}
+
 
 function createRepoDiv(repo) {
 	const repoElement = document.createElement('div');
@@ -30,36 +47,4 @@ function createRepoDiv(repo) {
         <p>Language: ${repo.language || 'Unknown'}</p>
     `;
 	return repoElement;
-}
-
-async function renderGithubRepos() {
-	try {
-		// Check if repos are already in local storage
-		const cachedData = localStorage.getItem(gitHubReposCacheKey);
-		const cacheDuration = 24 * 60 * 60 * 1000; // 24 hours
-
-		let repos;
-		if (cachedData) {
-			const parsedData = JSON.parse(cachedData);
-			if (Date.now() - parsedData.timestamp < cacheDuration) {
-				repos = parsedData.repos;
-			} else {
-				repos = await fetchGithubRepos();
-			}
-		} else {
-			repos = await fetchGithubRepos();
-		}
-
-		const projectsDiv = document.getElementById('projects-container');
-		if (!projectsDiv) {
-			console.error('projects-container element not found');
-			return;
-		}
-		projectsDiv.innerHTML = '';
-		repos.forEach(repo => {
-			projectsDiv.appendChild(createRepoDiv(repo));
-		});
-	} catch (error) {
-		console.error('Error rendering GitHub repositories:', error);
-	}
 }
