@@ -14,18 +14,28 @@
     <link rel="stylesheet" href="styles/base.css">
     <link rel="stylesheet" href="styles/header.css">
     <link rel="stylesheet" href="styles/footer.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
 <body>
     <header>
-        <a class="page-title" onclick="loadPage()">AndyDonnell</a>
+        <div class="page-title text-4xl">AndyDonnell</div>
+        <!-- <a class="text-4xl page-title">AndyDonnell</a>
         <nav>
             <button onclick="loadPage('blog')">Blog</button>
             <button onclick="loadPage('resume')">Career</button>
-        </nav>
+        </nav> -->
     </header>
     <main>
         <section id="page">
+            <p class="text-3xl">I'm doing some renovating.</p>
+            <br>
+            <p class="text-2xl"> In the meantime, you can <a href="https://www.linkedin.com/in/andydonnell/">connect
+                    with me on
+                    LinkedIn</a>, or check out <a href="https://github.com/a2y-d5l">
+                    my GitHub profile</a>.</p>
+            <br>
+            <p class="text-4xl">🙂</p>
         </section>
     </main>
     <footer>
@@ -44,7 +54,7 @@
             </a>
         </div>
     </footer>
-    <script>
+    <!-- <script>
         import { adjustTitleSize } from './js/header/resize.js';
         import { homePage } from './js/pages/home.js';
         import { blogPage } from './js/pages/blog.js';
@@ -75,7 +85,7 @@
         }
         document.addEventListener('DOMContentLoaded', adjustTitleSize());
         window.addEventListener('resize', adjustTitleSize());
-    </script>
+    </script> -->
 </body>
 
 </html>
