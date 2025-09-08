@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import modular CSS */
+@import './themes.css';
+@import './components.css';
+@import './animations.css';
+@import './accessibility.css';

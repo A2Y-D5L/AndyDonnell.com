@@ -1,0 +1,122 @@
+/* ========= Component Styles ========= */
+
+/* ---------------- Interactive Components ---------------- */
+.chip {
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--fg);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.chip:hover {
+  background: rgba(0,0,0,0.03);
+}
+
+.chip.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(0,0,0,0.02);
+}
+
+@supports (color: color-mix(in oklab, white, black)) {
+  .chip:hover {
+    background: color-mix(in oklab, var(--card) 92%, var(--fg));
+  }
+  
+  .chip.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: color-mix(in oklab, var(--accent) 10%, var(--card));
+  }
+}
+
+.badge {
+  border-radius: 0.375rem;
+  background: rgba(0,0,0,0.04);
+  padding: 0.25rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  transition: all 150ms ease;
+}
+
+@supports (color: color-mix(in oklab, white, black)) {
+  .badge {
+    background: color-mix(in oklab, var(--card) 92%, var(--fg));
+  }
+}
+
+.project-card:hover .badge {
+  background: rgba(0,0,0,0.03);
+  border-color: var(--border);
+  color: var(--accent);
+}
+
+@supports (color: color-mix(in oklab, white, black)) {
+  .project-card:hover .badge {
+    background: color-mix(in oklab, var(--accent) 10%, var(--card));
+    border-color: color-mix(in oklab, var(--accent) 30%, var(--border));
+    color: var(--accent);
+  }
+}
+
+/* ---------------- Link Effects ---------------- */
+.link-underline {
+  background-image: linear-gradient(to right, currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  transition: background-size 180ms ease;
+}
+
+.link-underline:hover {
+  background-size: 100% 1px;
+}
+
+/* ---------------- Navigation ---------------- */
+.nav-active {
+  color: var(--fg);
+  position: relative;
+}
+
+.nav-active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  background: var(--accent);
+  transform-origin: left;
+  transform: scaleX(1);
+}
+
+/* ---------------- Card Components ---------------- */
+.project-card {
+  background: var(--card);
+  border-color: var(--border);
+  transition: all 200ms ease;
+}
+
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* ---------------- Header Surface ---------------- */
+.header-surface {
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+}
+
+@supports (color: color-mix(in oklab, white, black)) {
+  .header-surface {
+    background-color: color-mix(in oklab, var(--card) 80%, transparent);
+  }
+}

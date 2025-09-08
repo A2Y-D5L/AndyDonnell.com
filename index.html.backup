@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system" data-accent="default">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Andy Donnell — Platform Architect & Go Engineer</title>
+
+  <!-- =========================================================
+       Pre-paint theme bootstrap to prevent FOUC (no flashes)
+       - Reads saved prefs and sets data-* before first paint
+       ========================================================= -->
+  <script>
+  (function () {
+    try {
+      const d = document.documentElement;
+      const THEME_KEY = 'theme-preference';
+      const ACCENT_KEY = 'accent-preference';
+      const savedTheme  = localStorage.getItem(THEME_KEY)  || d.getAttribute('data-theme')  || 'system';
+      const savedAccent = localStorage.getItem(ACCENT_KEY) || d.getAttribute('data-accent') || 'default';
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      d.setAttribute('data-theme', savedTheme);
+      d.dataset.themeEffective = (savedTheme === 'system') ? (prefersDark ? 'dark' : 'light') : savedTheme;
+      d.setAttribute('data-accent', savedAccent);
+    } catch {}
+  })();
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS (CDN for dev; prefer a built CSS for prod) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            accent: {
+              50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',500:'#3b82f6',
+              600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a'
+            }
+          },
+          fontFamily: {
+            sans:['Inter','ui-sans-serif','system-ui','Segoe UI','Roboto','Helvetica Neue','Arial','Noto Sans','Apple Color Emoji','Segoe UI Emoji'],
+            mono:['IBM Plex Mono','ui-monospace','SFMono-Regular','Menlo','Monaco','Consolas','Liberation Mono','monospace']
+          },
+          keyframes:{ blink:{'0%,49%':{opacity:'1'},'50%,100%':{opacity:'0'}} },
+          animation:{ blink:'blink 1.2s step-end infinite' },
+          boxShadow:{ card:'0 1px 2px rgba(0,0,0,0.06), 0 8px 20px rgba(0,0,0,0.04)' }
+        }
+      }
+    }
+  </script>
+
+  <!-- ========= Adaptive Theme System ========= -->
+  <style>
+    /* ---------------- Tokens: Light (default) ---------------- */
+    :root {
+      color-scheme: light;
+
+      --bg: #fafafa;
+      --fg: #0a0a0a;
+      --muted: #525252;
+      --border: #e5e7eb;
+      --card: #ffffff;
+
+      --accent: #2563eb;
+      --accent-strong: #1d4ed8;
+      --accent-ink: #ffffff;
+
+      /* Selection (tokens only; no utility duplication) */
+      --select-bg: #bfdbfe;
+      --select-fg: #111827;
+    }
+
+    /* ---------------- Tokens: Dark (system pref) ---------------- */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        color-scheme: dark;
+
+        --bg: #0b0b0b;
+        --fg: #f5f5f5;
+        --muted: #a3a3a3;
+        --border: #232323;
+        --card: #0f0f10;
+
+        --accent: #60a5fa;
+        --accent-strong: #3b82f6;
+        --accent-ink: #0a0a0a;
+
+        --select-bg: #1f3a5f;
+        --select-fg: #e5e7eb;
+      }
+    }
+
+    /* ---------------- Explicit Overrides: data-theme ---------------- */
+    html[data-theme="light"] {
+      color-scheme: light;
+      --bg: #fafafa;
+      --fg: #0a0a0a;
+      --muted: #525252;
+      --border: #e5e7eb;
+      --card: #ffffff;
+      --accent: #2563eb;
+      --accent-strong: #1d4ed8;
+      --accent-ink: #ffffff;
+      --select-bg: #bfdbfe;
+      --select-fg: #111827;
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #0b0b0b;
+      --fg: #f5f5f5;
+      --muted: #a3a3a3;
+      --border: #232323;
+      --card: #0f0f10;
+      --accent: #60a5fa;
+      --accent-strong: #3b82f6;
+      --accent-ink: #0a0a0a;
+      --select-bg: #1f3a5f;
+      --select-fg: #e5e7eb;
+    }
+
+    /* ---------------- Accent Variants: data-accent ---------------- */
+    html[data-accent="green"]  { --accent:#16a34a; --accent-strong:#15803d; --select-bg:#bbf7d0; }
+    html[data-accent="amber"]  { --accent:#f59e0b; --accent-strong:#d97706; --select-bg:#fde68a; }
+    html[data-accent="purple"] { --accent:#8b5cf6; --accent-strong:#7c3aed; --select-bg:#e9d5ff; }
+
+    /* ---------------- Global base ---------------- */
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    }
+    ::selection { background: var(--select-bg); color: var(--select-fg); } /* (4) TOKENS ONLY */
+
+    /* ---------------- Link underline micro-animation ---------------- */
+    .link-underline{
+      background-image:linear-gradient(to right,currentColor,currentColor);
+      background-repeat:no-repeat;background-size:0% 1px;background-position:0 100%;
+      transition:background-size 180ms ease
+    }
+    .link-underline:hover{background-size:100% 1px}
+
+    /* ---------------- Scrollspy active state (tokenized) ---------------- */
+    .nav-active { color: var(--fg); position: relative; }
+    .nav-active::after{
+      content:"";
+      position:absolute; left:0; right:0; bottom:-6px; height:2px;
+      background: var(--accent); transform-origin:left; transform:scaleX(1);
+    }
+
+    /* ---------------- Reduce motion for accessibility ---------------- */
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+    }
+
+    /* ---------------- Chips / Badges (tokenized + gamut safety) ---------------- */
+    .chip {
+      border-radius:9999px; border:1px solid var(--border); background:var(--card);
+      padding:0.375rem 0.75rem; font-size:0.75rem; font-weight:500; color:var(--fg);
+      cursor:pointer
+    }
+
+    /* Default (fallback) hover/active (7% overlay) for older browsers */
+    .chip:hover { background: rgba(0,0,0,0.03); }
+    .chip.active { border-color: var(--accent); color: var(--accent); background: rgba(0,0,0,0.02); }
+
+    /* Prefer color-mix when supported (6) */
+    @supports (color: color-mix(in oklab, white, black)) {
+      .chip:hover { background: color-mix(in oklab, var(--card) 92%, var(--fg)); }
+      .chip.active {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: color-mix(in oklab, var(--accent) 10%, var(--card));
+      }
+    }
+
+    .badge {
+      border-radius:0.375rem; background: rgba(0,0,0,0.04);
+      padding:0.25rem 0.5rem; font-size:0.6875rem; font-weight:500; color:var(--muted);
+      border:1px solid var(--border);
+    }
+    .project-card:hover .badge { background: rgba(0,0,0,0.03); border-color: var(--border); color: var(--accent); }
+    @supports (color: color-mix(in oklab, white, black)) {
+      .badge { background: color-mix(in oklab, var(--card) 92%, var(--fg)); }
+      .project-card:hover .badge {
+        background: color-mix(in oklab, var(--accent) 10%, var(--card));
+        border-color: color-mix(in oklab, var(--accent) 30%, var(--border));
+        color: var(--accent);
+      }
+    }
+
+    /* ---------------- Tailwind utility bridges (surgical) ---------------- */
+    html .bg-white        { background-color: var(--card) !important; }
+    html .bg-neutral-50   { background-color: var(--bg) !important; }
+    html .hover\:bg-neutral-100:hover { background-color: rgba(0,0,0,0.03) !important; }
+    html .bg-neutral-100  { background-color: rgba(0,0,0,0.03) !important; }
+    @supports (color: color-mix(in oklab, white, black)) {
+      html .hover\:bg-neutral-100:hover { background-color: color-mix(in oklab, var(--card) 92%, var(--fg)) !important; }
+      html .bg-neutral-100 { background-color: color-mix(in oklab, var(--card) 92%, var(--fg)) !important; }
+    }
+
+    html .border-neutral-200 { border-color: var(--border) !important; }
+    html .border-neutral-300 { border-color: color-mix(in oklab, var(--border) 85%, var(--fg)) !important; }
+
+    html .text-neutral-900 { color: var(--fg) !important; }
+    html .text-neutral-800 { color: color-mix(in oklab, var(--fg) 88%, transparent) !important; }
+    html .text-neutral-700 { color: color-mix(in oklab, var(--fg) 72%, transparent) !important; }
+    html .text-neutral-600 { color: var(--muted) !important; }
+    html .text-neutral-500 { color: color-mix(in oklab, var(--muted) 80%, transparent) !important; }
+
+    /* Accent utility bridges */
+    html .text-accent-600 { color: var(--accent) !important; }
+    html .hover\:text-accent-700:hover { color: var(--accent-strong) !important; }
+    html .bg-accent-600 { background-color: var(--accent) !important; color: var(--accent-ink) !important; }
+    html .hover\:bg-accent-700:hover { background-color: var(--accent-strong) !important; }
+    html .ring-accent-300 { --tw-ring-color: color-mix(in oklab, var(--accent) 30%, transparent) !important; }
+
+    /* Cards keep subtle shadow and tokenized border */
+    .project-card { background: var(--card); border-color: var(--border); }
+
+    /* Header translucency respects tokens (with fallback) */
+    .header-surface { background-color: rgba(255,255,255,0.8); backdrop-filter: blur(8px); }
+    @supports (color: color-mix(in oklab, white, black)) {
+      .header-surface { background-color: color-mix(in oklab, var(--card) 80%, transparent); }
+    }
+
+    /* Magnetic hover via CSS vars (so transforms compose) (5: transforms via --tx/--ty) */
+    .magnet { transform: translate(var(--tx, 0), var(--ty, 0)); will-change: transform; }
+  </style>
+</head>
+
+<body class="font-sans bg-neutral-50 text-neutral-900">
+  <!-- Skip link for keyboard users (7) -->
+  <a href="#about" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:bg-white focus:text-neutral-900 focus:outline-none focus:ring-2 focus:ring-accent-300 px-2 py-1 rounded">Skip to content</a>
+
+  <!-- ========== Header / Nav (Fixed, Scrollspy) ========== -->
+  <header class="fixed top-0 inset-x-0 z-40 header-surface border-b border-neutral-200" role="banner">
+    <nav class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between" aria-label="Primary">
+      <a href="#" class="font-mono text-sm sm:text-base tracking-tight text-neutral-900 flex items-center gap-1 transition-transform duration-150 hover:-translate-y-0.5">
+        <span>andy&nbsp;donnell_</span>
+        <span class="w-2 h-4 bg-accent-600 animate-blink translate-y-[1px]" aria-hidden="true"></span>
+      </a>
+
+      <div class="flex items-center gap-4">
+        <ul class="hidden sm:flex items-center gap-5 text-sm">
+          <li><a data-nav="about" href="#about" class="text-neutral-700 hover:text-neutral-900 link-underline">About</a></li>
+          <li><a data-nav="projects" href="#projects" class="text-neutral-700 hover:text-neutral-900 link-underline">Projects</a></li>
+          <li><a data-nav="blog" href="#blog" class="text-neutral-700 hover:text-neutral-900 link-underline">Blog</a></li>
+          <li><a data-nav="contact" href="#contact" class="text-neutral-700 hover:text-neutral-900 link-underline">Contact</a></li>
+        </ul>
+
+        <!-- Theme Controls (accessible menu) -->
+        <div class="relative">
+          <button id="theme-menu-button"
+                  class="chip text-xs"
+                  aria-haspopup="menu"
+                  aria-expanded="false"
+                  aria-controls="theme-menu">
+            Theme
+          </button>
+          <div id="theme-menu"
+               class="absolute right-0 mt-2 w-56 rounded-lg border border-neutral-200 bg-white shadow-card p-2 hidden z-50"
+               role="menu"
+               tabindex="-1"
+               aria-label="Theme settings">
+            <div class="text-[11px] uppercase tracking-wide text-neutral-500 px-2 pb-1">Mode</div>
+            <div class="grid grid-cols-3 gap-2 px-2">
+              <button class="chip text-xs" role="menuitem" data-set-theme="system">System</button>
+              <button class="chip text-xs" role="menuitem" data-set-theme="light">Light</button>
+              <button class="chip text-xs" role="menuitem" data-set-theme="dark">Dark</button>
+            </div>
+            <div class="text-[11px] uppercase tracking-wide text-neutral-500 px-2 pt-3 pb-1">Accent</div>
+            <div class="grid grid-cols-4 gap-2 px-2">
+              <button class="chip text-xs" role="menuitem" data-set-accent="default">Blue</button>
+              <button class="chip text-xs" role="menuitem" data-set-accent="green">Green</button>
+              <button class="chip text-xs" role="menuitem" data-set-accent="amber">Amber</button>
+              <button class="chip text-xs" role="menuitem" data-set-accent="purple">Purple</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <div class="h-14" aria-hidden="true"></div>
+
+  <main id="main" tabindex="-1" role="main">
+    <!-- ========== Hero ========== -->
+    <section class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pt-14 pb-12">
+      <div class="max-w-3xl opacity-0 translate-y-3 transition-all duration-500 ease-out will-change-transform" data-animate="fade-up">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-neutral-900">Andy Donnell</h1>
+        <p class="mt-3 text-lg text-neutral-700">
+          Platform Architect &amp; Go Engineer — building resilient cloud platforms, Kubernetes operators, and developer tooling.
+        </p>
+        <hr class="mt-6 border-neutral-200" />
+
+        <div class="mt-6 flex flex-wrap items-center gap-3">
+          <a href="/Andy_Donnell_Resume.pdf" type="application/pdf"
+             class="inline-flex items-center justify-center rounded-md bg-accent-600 text-white px-4 py-2 text-sm font-medium shadow-sm transition-all duration-150 hover:bg-accent-700 hover:shadow-md hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-accent-600/30 active:translate-y-0 magnet">
+            View Resume
+          </a>
+
+          <a href="https://github.com/A2Y-D5L" aria-label="GitHub"
+             class="p-2 rounded transition-colors duration-150 hover:bg-neutral-100 group" target="_blank" rel="noopener noreferrer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-neutral-600 group-hover:text-accent-600 transition-colors" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M12 2C6.475 2 2 6.59 2 12.253c0 4.52 2.865 8.354 6.839 9.708.5.095.683-.223.683-.498 0-.245-.009-.895-.014-1.756-2.782.616-3.369-1.37-3.369-1.37-.455-1.176-1.11-1.49-1.11-1.49-.907-.64.069-.627.069-.627 1.004.072 1.532 1.06 1.532 1.06.892 1.567 2.341 1.115 2.91.852.091-.663.35-1.116.636-1.372-2.22-.259-4.555-1.139-4.555-5.071 0-1.12.39-2.036 1.029-2.754-.103-.259-.446-1.302.098-2.714 0 0 .841-.275 2.756 1.052a9.27 9.27 0 0 1 2.51-.344c.851.004 1.707.118 2.51.344 1.915-1.327 2.755-1.052 2.755-1.052.546 1.412.203 2.455.1 2.714.64.718 1.028 1.634 1.028 2.754 0 3.942-2.338 4.81-4.565 5.066.36.327.682.97.682 1.954 0 1.41-.013 2.547-.013 2.894 0 .276.18.597.69.496C19.14 20.604 22 16.77 22 12.252 22 6.59 17.523 2 12 2Z" clip-rule="evenodd"/>
+            </svg>
+          </a>
+
+          <a href="https://www.linkedin.com/in/andydonnell" aria-label="LinkedIn"
+             class="p-2 rounded transition-colors duration-150 hover:bg-neutral-100 group" target="_blank" rel="noopener noreferrer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-neutral-600 group-hover:text-accent-600 transition-colors" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M20.452 20.452h-3.554v-5.569c0-1.328-.027-3.036-1.85-3.036-1.852 0-2.135 1.445-2.135 2.939v5.666H9.36V9h3.414v1.561h.048c.476-.901 1.636-1.85 3.366-1.85 3.6 0 4.265 2.37 4.265 5.455v6.286ZM5.337 7.433a2.062 2.062 0 1 1 0-4.124 2.062 2.062 0 0 1 0 4.124ZM7.114 20.452H3.56V9h3.554v11.452Z"/>
+            </svg>
+          </a>
+
+          <a href="#blog" aria-label="Blog" class="p-2 rounded transition-colors duration-150 hover:bg-neutral-100 group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-neutral-600 group-hover:text-accent-600 transition-colors" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M4 5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5zm10 0v3h3" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== About ========== -->
+    <section id="about" class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12 border-t border-neutral-200" aria-labelledby="about-title">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div class="md:col-span-2 opacity-0 translate-y-3 transition-all duration-500 ease-out will-change-transform" data-animate="fade-up">
+          <h2 id="about-title" class="font-mono text-xl text-neutral-900">about</h2>
+          <p class="mt-4 text-neutral-700 leading-7">
+            I’m a principal platform engineer focused on cloud control planes, Kubernetes operators, and Go-based developer tooling.
+            I design and build scalable systems with a strong emphasis on DX, reliability, and observability. I lead teams,
+            coach engineers, and advocate for pragmatic, well-architected solutions.
+          </p>
+          <p class="mt-4 text-neutral-700 leading-7">
+            Areas of depth: Kubernetes (operators/controllers), Crossplane, Argo, CI/CD pipelines, distributed systems in Go,
+            networking and zero-trust patterns, and platform product thinking.
+          </p>
+        </div>
+
+        <aside class="md:col-span-1" aria-label="Skills">
+          <div class="rounded-lg border border-neutral-200 bg-white p-5 shadow-card opacity-0 translate-y-3 transition-all duration-500 ease-out will-change-transform" data-animate="fade-up" data-animate-delay="100">
+            <h3 class="font-mono text-sm text-neutral-900">skills</h3>
+            <ul class="mt-3 space-y-1 font-mono text-[13px] text-neutral-800">
+              <li>go • kubernetes • operators</li>
+              <li>crossplane • argocd • workflows</li>
+              <li>aws • gcp • terraform</li>
+              <li>nats • grpc • envoy</li>
+              <li>ci/cd • mage • cobra</li>
+              <li>observability • tempo • traces</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ========== Projects (Enriched) ========== -->
+    <section id="projects" class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12 border-t border-neutral-200" aria-labelledby="projects-title">
+      <!-- Title + Controls -->
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 opacity-0 translate-y-3 transition-all duration-500 ease-out will-change-transform" data-animate="fade-up">
+        <div>
+          <h2 id="projects-title" class="font-mono text-xl text-neutral-900">projects</h2>
+          <p class="mt-1 text-sm text-neutral-600">Filter by stack, search titles/descriptions, and open deep-dive case studies.</p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-2 sm:items-center">
+          <label class="relative block">
+            <input id="proj-search" type="search" placeholder="Search projects…"
+                   class="peer w-full sm:w-72 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm placeholder:text-neutral-400 focus:border-accent-600 focus:outline-none focus:ring-2 focus:ring-accent-600/20" />
+            <svg class="pointer-events-none absolute right-2.5 top-2.5 size-4 text-neutral-400 peer-focus:text-accent-600" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M10 2a8 8 0 0 1 6.32 12.903l4.387 4.387-1.415 1.414-4.387-4.387A8 8 0 1 1 10 2m0 2a6 6 0 1 0 0 12A6 6 0 0 0 10 4Z"/>
+            </svg>
+          </label>
+
+          <label class="sr-only" for="proj-sort">Sort</label>
+          <select id="proj-sort" class="w-full sm:w-44 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-accent-600 focus:outline-none focus:ring-2 focus:ring-accent-600/20">
+            <option value="featured">Sort: Featured</option>
+            <option value="recent">Sort: Most Recent</option>
+            <option value="alpha">Sort: A → Z</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Filter chips -->
+      <div class="mt-4 flex flex-wrap gap-2" role="group" aria-label="Filter projects by technology">
+        <button class="chip active" data-chip="all">All</button>
+        <button class="chip" data-chip="go">Go</button>
+        <button class="chip" data-chip="kubernetes">Kubernetes</button>
+        <button class="chip" data-chip="crossplane">Crossplane</button>
+        <button class="chip" data-chip="nats">NATS</button>
+        <button class="chip" data-chip="grpc">gRPC</button>
+        <button class="chip" data-chip="observability">Observability</button>
+      </div>
+      <p class="mt-2 text-xs text-neutral-500">Tip: Combine filters (e.g., Go + Kubernetes) and type in the search to narrow further.</p>
+
+      <!-- Project grid -->
+      <div id="proj-grid" class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Card 1 -->
+        <article class="project-card group rounded-lg border border-neutral-200 bg-white p-0 shadow-card transition hover:-translate-y-0.5 hover:shadow-lg opacity-0 translate-y-3 will-change-transform magnet"
+                 data-animate="fade-up" data-animate-delay="0"
+                 data-tags="go kubernetes concurrency"
+                 data-title="go-futures: typed request/reply with shared worker pool"
+                 data-updated="2025-08-24"
+                 data-featured="1">
+          <figure class="relative">
+            <svg class="w-full aspect-[16/9] block rounded-t-lg" viewBox="0 0 800 450" role="img" aria-label="Code diagram thumbnail">
+              <defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0%" stop-color="#eff6ff"/><stop offset="100%" stop-color="#bfdbfe"/></linearGradient></defs>
+              <rect width="800" height="450" fill="url(#g1)"/>
+              <g fill="#1e3a8a" opacity=".85">
+                <rect x="64" y="64" width="230" height="28" rx="6"/>
+                <rect x="64" y="114" width="420" height="16" rx="4"/>
+                <rect x="64" y="140" width="360" height="16" rx="4"/>
+                <rect x="64" y="210" width="672" height="8" rx="4"/>
+                <rect x="64" y="234" width="540" height="8" rx="4"/>
+                <rect x="64" y="258" width="610" height="8" rx="4"/>
+              </g>
+            </svg>
+            <span class="absolute left-3 top-3 rounded-full bg-neutral-900/80 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-neutral-50">Featured</span>
+          </figure>
+
+          <div class="p-5">
+            <h3 class="font-mono text-[15px] text-neutral-900">go-futures/<span class="text-neutral-500">service.go</span></h3>
+            <div class="mt-1 flex items-center gap-3 text-xs text-neutral-500">
+              <span>Updated: Aug 24, 2025</span><span aria-hidden="true">•</span><span>Coverage: 86%</span>
+            </div>
+            <p class="mt-2 text-sm text-neutral-700">
+              Generic futures-based request/reply library in Go with a shared worker pool, cancellation, and graceful shutdown.
+            </p>
+            <ul class="mt-3 flex flex-wrap gap-1.5">
+              <li class="badge">Go</li><li class="badge">Concurrency</li><li class="badge">Worker Pool</li>
+            </ul>
+            <div class="mt-4 flex items-center gap-3">
+              <a href="https://github.com/A2Y-D5L/go-futures" target="_blank" rel="noopener noreferrer" class="text-sm text-accent-600 hover:text-accent-700 link-underline">GitHub</a>
+              <a href="#" class="text-sm text-accent-600 hover:text-accent-700 link-underline">Case Study</a>
+              <a href="#" class="text-sm text-accent-600 hover:text-accent-700 link-underline">Docs</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="project-card group rounded-lg border border-neutral-200 bg-white p-0 shadow-card transition hover:-translate-y-0.5 hover:shadow-lg opacity-0 translate-y-3 will-change-transform magnet"
+                 data-animate="fade-up" data-animate-delay="80"
+                 data-tags="kubernetes crossplane gitops"
+                 data-title="crossplane platform blueprints with secure networking defaults"
+                 data-updated="2025-09-01"
+                 data-featured="1">
+          <figure class="relative">
+            <svg class="w-full aspect-[16/9] block rounded-t-lg" viewBox="0 0 800 450" role="img" aria-label="Blueprint thumbnail">
+              <defs><linearGradient id="g2" x1="0" x2="1"><stop offset="0%" stop-color="#ecfeff"/><stop offset="100%" stop-color="#cffafe"/></linearGradient></defs>
+              <rect width="800" height="450" fill="url(#g2)"/>
+              <g fill="#0f766e" opacity=".9">
+                <rect x="72" y="72" width="288" height="28" rx="6"/>
+                <rect x="72" y="120" width="520" height="12" rx="4"/>
+                <rect x="72" y="144" width="460" height="12" rx="4"/>
+                <rect x="72" y="220" width="656" height="10" rx="5"/>
+                <rect x="72" y="244" width="520" height="10" rx="5"/>
+                <rect x="72" y="268" width="590" height="10" rx="5"/>
+              </g>
+            </svg>
+            <span class="absolute left-3 top-3 rounded-full bg-neutral-900/80 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-neutral-50">Featured</span>
+          </figure>
+
+          <div class="p-5">
+            <h3 class="font-mono text-[15px] text-neutral-900">crossplane/<span class="text-neutral-500">platform-blueprints</span></h3>
+            <div class="mt-1 flex items-center gap-3 text-xs text-neutral-500">
+              <span>Updated: Sep 1, 2025</span><span aria-hidden="true">•</span><span>Blueprint maturity: Beta</span>
+            </div>
+            <p class="mt-2 text-sm text-neutral-700">
+              Opinionated control-plane building blocks using Crossplane v2 with secure-by-default networking and GitOps automation.
+            </p>
+            <ul class="mt-3 flex flex-wrap gap-1.5">
+              <li class="badge">Crossplane</li><li class="badge">Kubernetes</li><li class="badge">GitOps</li>
+            </ul>
+            <div class="mt-4 flex items-center gap-3">
+              <a href="https://github.com/A2Y-D5L" target="_blank" rel="noopener noreferrer" class="text-sm text-accent-600 hover:text-accent-700 link-underline">GitHub</a>
+              <a href="#" class="text-sm text-accent-600 hover:text-accent-700 link-underline">Case Study</a>
+              <a href="#" class="text-sm text-accent-600 hover:text-accent-700 link-underline">Design Doc</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="project-card group rounded-lg border border-neutral-200 bg-white p-0 shadow-card transition hover:-translate-y-0.5 hover:shadow-lg opacity-0 translate-y-3 will-change-transform magnet"
+                 data-animate="fade-up" data-animate-delay="160"
+                 data-tags="observability kubernetes tracing"
+                 data-title="tempo operator tracing visualize orchestration flows"
+                 data-updated="2025-07-14"
+                 data-featured="0">
+          <figure class="relative">
+            <svg class="w-full aspect-[16/9] block rounded-t-lg" viewBox="0 0 800 450" role="img" aria-label="Tracing thumbnail">
+              <defs><linearGradient id="g3" x1="0" x2="1"><stop offset="0%" stop-color="#f5f3ff"/><stop offset="100%" stop-color="#e9d5ff"/></linearGradient></defs>
+              <rect width="800" height="450" fill="url(#g3)"/>
+              <g fill="#6d28d9" opacity=".9">
+                <rect x="80" y="84" width="260" height="28" rx="6"/>
+                <rect x="80" y="132" width="520" height="12" rx="4"/>
+                <rect x="80" y="156" width="400" height="12" rx="4"/>
+                <circle cx="120" cy="240" r="8"/>
+                <rect x="128" y="236" width="560" height="8" rx="4"/>
+                <circle cx="692" cy="240" r="8"/>
+              </g>
+            </svg>
+          </figure>
+
+          <div class="p-5">
+            <h3 class="font-mono text-[15px] text-neutral-900">tempo/<span class="text-neutral-500">operator-tracing</span></h3>
+            <div class="mt-1 flex items-center gap-3 text-xs text-neutral-500">
+              <span>Updated: Jul 14, 2025</span><span aria-hidden="true">•</span><span>Demo env: Kind + Tempo</span>
+            </div>
+            <p class="mt-2 text-sm text-neutral-700">
+              Distributed tracing for K8s operators; visualize orchestration flows across server-side CRD composition.
+            </p>
+            <ul class="mt-3 flex flex-wrap gap-1.5">
+              <li class="badge">Observability</li><li class="badge">Tracing</li><li class="badge">Kubernetes</li>
+            </ul>
+            <div class="mt-4 flex items-center gap-3">
+              <a href="#" class="text-sm text-accent-600 hover:text-accent-700 link-underline">Write-up</a>
+              <a href="#" class="text-sm text-accent-600 hover:text-accent-700 link-underline">Demo</a>
+              <a href="#" class="text-sm text-accent-600 hover:text-accent-700 link-underline">Slides</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 4 -->
+        <article class="project-card group rounded-lg border border-neutral-200 bg-white p-0 shadow-card transition hover:-translate-y-0.5 hover:shadow-lg opacity-0 translate-y-3 will-change-transform magnet"
+                 data-animate="fade-up" data-animate-delay="200"
+                 data-tags="go grpc nats"
+                 data-title="grpc external processor with rego policy and nats events"
+                 data-updated="2025-05-17"
+                 data-featured="0">
+          <figure class="relative">
+            <svg class="w-full aspect-[16/9] block rounded-t-lg" viewBox="0 0 800 450" role="img" aria-label="Edge events thumbnail">
+              <defs><linearGradient id="g4" x1="0" x2="1"><stop offset="0%" stop-color="#fff7ed"/><stop offset="100%" stop-color="#fed7aa"/></linearGradient></defs>
+              <rect width="800" height="450" fill="url(#g4)"/>
+              <g fill="#9a3412" opacity=".9">
+                <rect x="76" y="90" width="300" height="28" rx="6"/>
+                <rect x="76" y="138" width="520" height="12" rx="4"/>
+                <rect x="76" y="162" width="440" height="12" rx="4"/>
+                <rect x="76" y="240" width="648" height="10" rx="5"/>
+                <rect x="76" y="264" width="520" height="10" rx="5"/>
+              </g>
+            </svg>
+          </figure>
+
+          <div class="p-5">
+            <h3 class="font-mono text-[15px] text-neutral-900">envoy/<span class="text-neutral-500">ext-proc</span></h3>
+            <div class="mt-1 flex items-center gap-3 text-xs text-neutral-500">
+              <span>Updated: May 17, 2025</span><span aria-hidden="true">•</span><span>Throughput: 18k rps (demo)</span>
+            </div>
+            <p class="mt-2 text-sm text-neutral-700">
+              Go-based gRPC Envoy external processor validating JWTs and evaluating Rego; emits NATS events for auditing.
+            </p>
+            <ul class="mt-3 flex flex-wrap gap-1.5">
+              <li class="badge">Go</li><li class="badge">gRPC</li><li class="badge">NATS</li>
+            </ul>
+            <div class="mt-4 flex items-center gap-3">
+              <a href="#" class="text-sm text-accent-600 hover:text-accent-700 link-underline">GitHub</a>
+              <a href="#" class="text-sm text-accent-600 hover:text-accent-700 link-underline">Case Study</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========== Blog ========== -->
+    <section id="blog" class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12 border-t border-neutral-200" aria-labelledby="blog-title">
+      <div class="opacity-0 translate-y-3 transition-all duration-500 ease-out will-change-transform" data-animate="fade-up">
+        <h2 id="blog-title" class="font-mono text-xl text-neutral-900">blog</h2>
+        <div class="mt-6 space-y-5">
+          <article class="rounded-lg border border-neutral-200 bg-white p-5 shadow-card hover:shadow-lg transition-all duration-200 opacity-0 translate-y-3 will-change-transform" data-animate="fade-up" data-animate-delay="0">
+            <a href="#" class="group block">
+              <h3 class="text-lg font-medium text-neutral-900 group-hover:text-neutral-950 transition-colors">
+                Designing a Dev-First Internal Platform with Crossplane v2
+              </h3>
+              <p class="mt-1 text-sm text-neutral-500">Sep 6, 2025 · 8 min read · Platform, Crossplane</p>
+              <p class="mt-3 text-neutral-700 line-clamp-2">
+                An opinionated blueprint for secure-by-default environments, GitOps automation, and easy developer onboarding.
+              </p>
+            </a>
+          </article>
+
+          <article class="rounded-lg border border-neutral-200 bg-white p-5 shadow-card hover:shadow-lg transition-all duration-200 opacity-0 translate-y-3 will-change-transform" data-animate="fade-up" data-animate-delay="80">
+            <a href="#" class="group block">
+              <h3 class="text-lg font-medium text-neutral-900 group-hover:text-neutral-950 transition-colors">
+                Futures in Go: A Practical, Typed Request/Reply Pattern
+              </h3>
+              <p class="mt-1 text-sm text-neutral-500">Aug 24, 2025 · 10 min read · Go, Concurrency</p>
+              <p class="mt-3 text-neutral-700 line-clamp-2">
+                Implementing robust async request/reply with context propagation, shared worker pools, and graceful shutdown.
+              </p>
+            </a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== Contact ========== -->
+    <section id="contact" class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12 border-t border-neutral-200" aria-labelledby="contact-title">
+      <div class="max-w-xl opacity-0 translate-y-3 transition-all duration-500 ease-out will-change-transform" data-animate="fade-up">
+        <h2 id="contact-title" class="font-mono text-xl text-neutral-900">contact</h2>
+        <p class="mt-3 text-neutral-700">
+          Interested in collaborating or hiring? Reach out — I’m always open to discussing platform architecture, Go, and developer experience.
+        </p>
+
+        <div class="mt-6 flex flex-wrap items-center gap-3">
+          <a href="mailto:andy@andydonnell.com"
+             class="inline-flex items-center justify-center rounded-md border border-neutral-300 bg-white text-neutral-900 px-4 py-2 text-sm transition-all duration-150 hover:bg-neutral-50 hover:shadow-sm hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-accent-600/30 active:translate-y-0 magnet">
+            Email Me
+          </a>
+          <a href="https://www.linkedin.com/in/andydonnell" target="_blank" rel="noopener noreferrer"
+             class="inline-flex items-center justify-center rounded-md border border-neutral-300 bg-white text-neutral-900 px-4 py-2 text-sm transition-all duration-150 hover:bg-neutral-50 hover:shadow-sm hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-accent-600/30 active:translate-y-0 magnet">
+            LinkedIn
+          </a>
+          <a href="https://github.com/A2Y-D5L" target="_blank" rel="noopener noreferrer"
+             class="inline-flex items-center justify-center rounded-md border border-neutral-300 bg-white text-neutral-900 px-4 py-2 text-sm transition-all duration-150 hover:bg-neutral-50 hover:shadow-sm hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-accent-600/30 active:translate-y-0 magnet">
+            GitHub
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Command Palette (Accessible Dialog) -->
+  <div id="cmdk-backdrop" class="fixed inset-0 bg-black/30 opacity-0 pointer-events-none transition-opacity z-50" aria-hidden="true"></div>
+  <div id="cmdk"
+       class="fixed left-1/2 top-24 -translate-x-1/2 w-[min(640px,92vw)] rounded-xl border border-neutral-200 bg-white shadow-2xl p-3 opacity-0 pointer-events-none z-50"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="cmdk-label">
+    <h2 id="cmdk-label" class="sr-only">Command Palette</h2>
+    <input id="cmdk-input" type="search" placeholder="Search… (projects, sections, links)"
+           class="w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-accent-600 focus:outline-none focus:ring-2 focus:ring-accent-600/20"
+           aria-controls="cmdk-list" aria-activedescendant="" />
+    <ul id="cmdk-list" class="mt-2 max-h-80 overflow-auto text-sm divide-y divide-neutral-100" role="listbox"></ul>
+    <div class="mt-2 flex justify-between text-[11px] text-neutral-500">
+      <span>Press <kbd class="border px-1 rounded">↩</kbd> to open</span>
+      <span><kbd class="border px-1 rounded">Esc</kbd> close • <kbd class="border px-1 rounded">↑</kbd>/<kbd class="border px-1 rounded">↓</kbd> navigate</span>
+    </div>
+  </div>
+
+  <!-- ========== Footer (Terminal-style) ========== -->
+  <footer class="border-top border-neutral-200 bg-white border-t" role="contentinfo">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
+      <div class="font-mono text-sm text-neutral-800 flex items-center gap-1">
+        <span>andy@andydonnell.com:~$</span>
+        <span class="w-2 h-4 bg-accent-600 animate-blink translate-y-[1px]" aria-hidden="true"></span>
+      </div>
+      <p class="mt-3 text-xs text-neutral-500">© 2025 Andy Donnell. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- ========== Site JS: Motion, Scrollspy, Project Controls ========== -->
+  <script>
+    (function () {
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // ---- Scroll-Reveal ----
+      if (!reduceMotion && 'IntersectionObserver' in window) {
+        const els = document.querySelectorAll('[data-animate="fade-up"]');
+        const io = new IntersectionObserver((entries, obs) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const el = entry.target;
+              const delay = parseInt(el.getAttribute('data-animate-delay') || '0', 10);
+              setTimeout(() => {
+                el.classList.remove('opacity-0', 'translate-y-3');
+                el.classList.add('opacity-100', 'translate-y-0');
+              }, delay);
+              obs.unobserve(el);
+            }
+          });
+        }, { rootMargin: '0px 0px -10% 0px', threshold: 0.1 });
+
+        els.forEach((el) => {
+          // keep JIT classes for CDN; safe to remove if using a built Tailwind CSS
+          el.classList.add('opacity-0', 'translate-y-3');
+          el.classList.add('opacity-100', 'translate-y-0'); // keep JIT classes
+          el.classList.remove('opacity-100', 'translate-y-0');
+          io.observe(el);
+        });
+      } else {
+        document.querySelectorAll('[data-animate="fade-up"]').forEach((el) => {
+          el.classList.remove('opacity-0', 'translate-y-3');
+          el.classList.add('opacity-100', 'translate-y-0');
+        });
+      }
+
+      // ---- Scrollspy (5): robust activation + fallback when none intersect ----
+      const sections = ['about', 'projects', 'blog', 'contact'];
+      const navMap = new Map(sections.map(id => [id, document.querySelector(`[data-nav="${id}"]`)]));
+      const ratioMap = new Map();
+      function setActive(id) {
+        document.querySelectorAll('[data-nav]').forEach(a => {
+          a.classList.remove('nav-active');
+          a.removeAttribute('aria-current');
+        });
+        const link = navMap.get(id);
+        if (link) { link.classList.add('nav-active'); link.setAttribute('aria-current','page'); }
+      }
+      function closestByViewport() {
+        const center = window.innerHeight * 0.33;
+        let best = { id:null, dist: Infinity };
+        sections.forEach(id => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          const r = el.getBoundingClientRect();
+          const dist = Math.abs(r.top - center);
+          if (dist < best.dist) best = { id, dist };
+        });
+        return best.id;
+      }
+
+      if ('IntersectionObserver' in window) {
+        const spIo = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            ratioMap.set(entry.target.id, entry.intersectionRatio);
+          });
+          // pick the section with highest ratio > 0
+          let bestId = null, bestRatio = 0;
+          ratioMap.forEach((ratio, id) => {
+            if (ratio > bestRatio) { bestRatio = ratio; bestId = id; }
+          });
+          if (bestRatio > 0) {
+            setActive(bestId);
+          } else {
+            // Fallback: none intersecting -> choose closest to viewport top
+            const id = closestByViewport();
+            if (id) setActive(id);
+          }
+        }, { rootMargin: '-40% 0px -50% 0px', threshold: [0.01, 0.25, 0.5, 0.75, 1] });
+
+        sections.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) spIo.observe(el);
+        });
+
+        // Ensure one active on load and after hash changes
+        window.addEventListener('DOMContentLoaded', () => {
+          const hash = (location.hash || '').replace('#','');
+          setActive(sections.includes(hash) ? hash : closestByViewport() || sections[0]);
+        });
+        window.addEventListener('hashchange', () => {
+          const hash = (location.hash || '').replace('#','');
+          if (sections.includes(hash)) setActive(hash);
+        });
+        // Also update on scroll as a safety net if IO misses
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+          if (ticking) return;
+          ticking = true;
+          requestAnimationFrame(() => {
+            let bestId = null, bestRatio = 0;
+            ratioMap.forEach((ratio, id) => { if (ratio > bestRatio) { bestRatio = ratio; bestId = id; } });
+            if (bestRatio === 0) {
+              const id = closestByViewport();
+              if (id) setActive(id);
+            }
+            ticking = false;
+          });
+        }, { passive: true });
+      } else {
+        // No IO support: simple scroll fallback
+        const onScroll = () => setActive(closestByViewport() || sections[0]);
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('DOMContentLoaded', onScroll);
+      }
+
+      // ---- Subtle "magnetic" hover for cards & primary CTAs ----
+      if (!reduceMotion) {
+        const hoverables = document.querySelectorAll('article.project-card, a.inline-flex');
+        hoverables.forEach((el) => {
+          el.classList.add('magnet');
+          el.addEventListener('mousemove', (e) => {
+            const rect = el.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+            const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+            el.style.setProperty('--tx', `${x * 2}px`);
+            el.style.setProperty('--ty', `${y * 2}px`);
+          });
+          el.addEventListener('mouseleave', () => {
+            el.style.removeProperty('--tx');
+            el.style.removeProperty('--ty');
+          });
+        });
+      }
+
+      // ---- Project Controls: filter chips, search, sort (5: robust date handling) ----
+      const grid = document.getElementById('proj-grid');
+      const cards = Array.from(grid.querySelectorAll('.project-card'));
+      const chips = Array.from(document.querySelectorAll('.chip[data-chip]'));
+      const search = document.getElementById('proj-search');
+      const sortSel = document.getElementById('proj-sort');
+
+      // Normalize & precompute timestamps once to avoid cross-browser Date quirks
+      cards.forEach(c => {
+        const iso = (c.dataset.updated || '').trim();
+        const ts = Date.parse(iso); // ISO 8601 -> ms since epoch
+        if (!Number.isNaN(ts)) c.dataset.updatedTs = String(ts);
+      });
+
+      const active = new Set(['all']);
+      function normalize(s) { return (s || '').toLowerCase().trim(); }
+
+      function matchesTags(card) {
+        if (active.has('all')) return true;
+        const tags = (card.dataset.tags || '').split(/\s+/);
+        for (const t of active) { if (!tags.includes(t)) return false; }
+        return true;
+      }
+      function matchesSearch(card) {
+        const q = normalize(search.value);
+        if (!q) return true;
+        const title = normalize(card.dataset.title);
+        return title.includes(q);
+      }
+      function sortCards(list) {
+        const mode = sortSel.value;
+        const byTitle = (a,b)=> a.dataset.title.localeCompare(b.dataset.title);
+        const ts = (el)=> Number(el.dataset.updatedTs || 0);
+        const byRecent = (a,b)=> ts(b) - ts(a);
+        const byFeatured = (a,b)=> (+b.dataset.featured - +a.dataset.featured) || byRecent(a,b);
+        if (mode === 'alpha') return list.sort(byTitle);
+        if (mode === 'recent') return list.sort(byRecent);
+        return list.sort(byFeatured);
+      }
+      function render() {
+        const visible = cards.filter(c => matchesTags(c) && matchesSearch(c));
+        const hidden = cards.filter(c => !visible.includes(c));
+        sortCards(visible);
+        const frag = document.createDocumentFragment();
+        visible.forEach(c => frag.appendChild(c));
+        hidden.forEach(c => frag.appendChild(c));
+        grid.appendChild(frag);
+        visible.forEach(c => { c.classList.remove('hidden','opacity-30','pointer-events-none'); if (!reduceMotion) { c.style.animationDelay = '0ms'; }});
+        hidden.forEach(c => { c.classList.add('hidden','opacity-30','pointer-events-none'); });
+      }
+      chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          const tag = chip.dataset.chip;
+          if (tag === 'all') { active.clear(); active.add('all'); }
+          else {
+            if (active.has('all')) active.delete('all');
+            if (active.has(tag)) active.delete(tag); else active.add(tag);
+            if (active.size === 0) active.add('all');
+          }
+          chips.forEach(c => c.classList.toggle('active', active.has('all') ? c.dataset.chip === 'all' : active.has(c.dataset.chip)));
+          render();
+        });
+      });
+      if (search) search.addEventListener('input', render);
+      if (sortSel) sortSel.addEventListener('change', render);
+      chips.forEach(c => c.classList.toggle('active', c.dataset.chip === 'all'));
+      render();
+
+      // ---- Keyboard focus polish ----
+      let mouseDown = false;
+      document.addEventListener('mousedown', () => { mouseDown = true; });
+      document.addEventListener('mouseup',   () => { mouseDown = false; });
+      document.addEventListener('focusin', (e) => { if (mouseDown) e.target.classList.add('outline-none'); });
+      document.addEventListener('focusout', (e) => { e.target.classList.remove('outline-none'); });
+    })();
+  </script>
+
+  <!-- ========== Command Palette (Accessible) ========== -->
+  <script>
+    (() => {
+      const palette = document.getElementById('cmdk');
+      const backdrop = document.getElementById('cmdk-backdrop');
+      const input = document.getElementById('cmdk-input');
+      const list = document.getElementById('cmdk-list');
+
+      /* Focus trap support */
+      let previouslyFocused = null;
+      function getTabbables() {
+        return palette.querySelectorAll('input,button,[href],select,textarea,[tabindex]:not([tabindex="-1"])');
+      }
+      function trapTab(e) {
+        if (e.key !== 'Tab') return;
+        const nodes = Array.from(getTabbables());
+        if (!nodes.length) return;
+        const first = nodes[0];
+        const last = nodes[nodes.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+
+      function openPalette() {
+        previouslyFocused = document.activeElement;
+        backdrop.classList.remove('pointer-events-none'); palette.classList.remove('pointer-events-none');
+        requestAnimationFrame(() => {
+          backdrop.classList.add('opacity-100'); palette.classList.add('opacity-100');
+        });
+        input.value=''; render(''); input.focus();
+        document.addEventListener('keydown', trapTab, true);
+      }
+      function closePalette() {
+        backdrop.classList.remove('opacity-100'); palette.classList.remove('opacity-100');
+        setTimeout(() => {
+          backdrop.classList.add('pointer-events-none'); palette.classList.add('pointer-events-none');
+          input.blur();
+          document.removeEventListener('keydown', trapTab, true);
+          previouslyFocused && previouslyFocused.focus();
+        }, 150);
+      }
+
+      function indexItems() {
+        const items = [];
+        document.querySelectorAll('section[id]').forEach(sec => {
+          const id = sec.id;
+          const title = sec.querySelector('h2')?.textContent?.trim() || id;
+          items.push({ label:`Section — ${title}`, url:`#${id}`, type:'section' });
+        });
+        document.querySelectorAll('header [data-nav]').forEach(a => {
+          items.push({ label:`Nav — ${a.textContent.trim()}`, url:a.getAttribute('href'), type:'nav' });
+        });
+        document.querySelectorAll('.project-card').forEach(card => {
+          items.push({
+            label: `Project — ${card.dataset.title}`,
+            url: '#projects',
+            type: 'project',
+            el: card,
+            tags: (card.dataset.tags || '').split(/\s+/)
+          });
+        });
+
+        /* Palette actions: theme toggles */
+        items.push({ label:'Theme — Toggle Light',  type:'action', action:()=>window.setTheme('light') });
+        items.push({ label:'Theme — Toggle Dark',   type:'action', action:()=>window.setTheme('dark') });
+        items.push({ label:'Theme — Use System',    type:'action', action:()=>window.setTheme('system') });
+        items.push({ label:'Accent — Blue',         type:'action', action:()=>window.setAccent('default') });
+        items.push({ label:'Accent — Green',        type:'action', action:()=>window.setAccent('green') });
+        items.push({ label:'Accent — Amber',        type:'action', action:()=>window.setAccent('amber') });
+        items.push({ label:'Accent — Purple',       type:'action', action:()=>window.setAccent('purple') });
+
+        return items;
+      }
+      const INDEX = indexItems();
+
+      function norm(s){ return (s||'').toLowerCase().trim(); }
+      function score(q, text) {
+        const i = text.indexOf(q);
+        return i < 0 ? -1 : (q.length ? (100 - i) + Math.min(q.length, text.length) : 1);
+      }
+
+      let activeIndex = -1;
+      function render(query) {
+        const q = norm(query);
+        const results = INDEX.map(it => {
+          const base = norm(it.label);
+          const s = score(q, base) + (it.tags && it.tags.some(t=>norm(t).includes(q)) ? 10 : 0);
+          return { it, s };
+        }).filter(r => r.s >= 0)
+          .sort((a,b)=> b.s - a.s)
+          .slice(0, 20);
+
+        list.innerHTML = '';
+        results.forEach(({it}, idx) => {
+          const li = document.createElement('li');
+          li.className = 'p-2 cursor-pointer flex items-center justify-between bg-transparent hover:bg-neutral-100';
+          li.setAttribute('role','option');
+          li.id = `cmdk-opt-${idx}`;
+          li.dataset.index = idx;
+          li.innerHTML = `<span class="text-neutral-900">${it.label}</span><span class="text-[11px] text-neutral-500">${it.type}</span>`;
+          li.addEventListener('click', () => activate(it));
+          list.appendChild(li);
+        });
+        activeIndex = results.length ? 0 : -1;
+        highlight();
+      }
+
+      function highlight(){
+        const items = list.querySelectorAll('[role="option"]');
+        items.forEach((li,i)=>{
+          li.classList.toggle('bg-neutral-100', i===activeIndex);
+        });
+        const active = items[activeIndex];
+        input.setAttribute('aria-activedescendant', active ? active.id : '');
+        if (active) active.scrollIntoView({ block: 'nearest' });
+      }
+
+      function activate(it){
+        closePalette();
+        if (it.action) return it.action();
+        if (it.el) {
+          it.el.scrollIntoView({behavior:'smooth', block:'start'});
+          it.el.classList.add('ring','ring-accent-300');
+          setTimeout(()=>it.el.classList.remove('ring','ring-accent-300'),800);
+        }
+        if (it.url) location.href = it.url;
+      }
+
+      window.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openPalette(); }
+        if (e.key === 'Escape' && !palette.classList.contains('pointer-events-none')) closePalette();
+        if (!palette.classList.contains('pointer-events-none')) {
+          if (e.key === 'ArrowDown') { e.preventDefault(); activeIndex = Math.min(activeIndex + 1, list.children.length - 1); highlight(); }
+          if (e.key === 'ArrowUp')   { e.preventDefault(); activeIndex = Math.max(activeIndex - 1, 0); highlight(); }
+          if (e.key === 'Enter' && activeIndex >= 0) { e.preventDefault(); list.children[activeIndex]?.click(); }
+        }
+      });
+      backdrop.addEventListener('click', closePalette);
+      input.addEventListener('input', e=>render(e.target.value));
+
+      // expose open/close for future bindings if needed
+      window.__cmdk = { open: openPalette, close: closePalette };
+    })();
+  </script>
+
+  <!-- ========== Adaptive Theme Controller (persist + system sync) ========== -->
+  <script>
+    (function () {
+      const root = document.documentElement;
+      const THEME_KEY = 'theme-preference';     // 'system' | 'light' | 'dark'
+      const ACCENT_KEY = 'accent-preference';   // 'default' | 'green' | 'amber' | 'purple'
+      const mm = window.matchMedia('(prefers-color-scheme: dark)');
+
+      function applyTheme(mode) {
+        const effective = (mode === 'system') ? (mm.matches ? 'dark' : 'light') : mode;
+        root.setAttribute('data-theme', mode);
+        root.dataset.themeEffective = effective;
+      }
+      function applyAccent(name) {
+        root.setAttribute('data-accent', name || 'default');
+      }
+
+      function setTheme(mode) {
+        localStorage.setItem(THEME_KEY, mode);
+        applyTheme(mode);
+      }
+      function setAccent(name) {
+        localStorage.setItem(ACCENT_KEY, name || 'default');
+        applyAccent(name || 'default');
+      }
+
+      // Initialize from storage (or defaults already on <html>)
+      const savedTheme  = localStorage.getItem(THEME_KEY)  || root.getAttribute('data-theme')  || 'system';
+      const savedAccent = localStorage.getItem(ACCENT_KEY) || root.getAttribute('data-accent') || 'default';
+      applyTheme(savedTheme);
+      applyAccent(savedAccent);
+
+      // React to system changes when in "system"
+      mm.addEventListener?.('change', () => {
+        const pref = localStorage.getItem(THEME_KEY) || 'system';
+        if (pref === 'system') applyTheme('system');
+      });
+
+      // Expose helpers globally (used by palette + header controls)
+      window.setTheme = setTheme;
+      window.setAccent = setAccent;
+
+      // Header theme menu wiring (with a11y + focus return + simple trap)
+      const btn = document.getElementById('theme-menu-button');
+      const menu = document.getElementById('theme-menu');
+
+      if (btn && menu) {
+        let menuOpen = false;
+        let lastFocus = null;
+
+        function getMenuItems(){ return menu.querySelectorAll('[role="menuitem"]'); }
+        function open() {
+          if (menuOpen) return;
+          lastFocus = document.activeElement;
+          menu.classList.remove('hidden');
+          btn.setAttribute('aria-expanded','true');
+          menuOpen = true;
+          menu.focus();
+          document.addEventListener('keydown', onKeydown, true);
+          document.addEventListener('click', onDocClick, true);
+        }
+        function close() {
+          if (!menuOpen) return;
+          menu.classList.add('hidden');
+          btn.setAttribute('aria-expanded','false');
+          menuOpen = false;
+          document.removeEventListener('keydown', onKeydown, true);
+          document.removeEventListener('click', onDocClick, true);
+          (lastFocus || btn).focus();
+        }
+        function onKeydown(e) {
+          if (!menuOpen) return;
+          const items = Array.from(getMenuItems());
+          const currentIndex = items.indexOf(document.activeElement);
+          switch (e.key) {
+            case 'Escape': e.stopPropagation(); e.preventDefault(); close(); break;
+            case 'ArrowDown':
+              e.preventDefault();
+              (items[(currentIndex + 1 + items.length) % items.length] || menu).focus();
+              break;
+            case 'ArrowUp':
+              e.preventDefault();
+              (items[(currentIndex - 1 + items.length) % items.length] || menu).focus();
+              break;
+            case 'Tab':
+              // simple focus trap within the menu when open
+              e.preventDefault();
+              if (e.shiftKey) {
+                (items[(currentIndex - 1 + items.length) % items.length] || items[0]).focus();
+              } else {
+                (items[(currentIndex + 1 + items.length) % items.length] || items[0]).focus();
+              }
+              break;
+          }
+        }
+        function onDocClick(e) {
+          if (!menu.contains(e.target) && e.target !== btn) close();
+        }
+
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          menu.classList.contains('hidden') ? open() : close();
+        });
+
+        getMenuItems().forEach(el => {
+          el.addEventListener('click', () => { // apply and close
+            if (el.dataset.setTheme) window.setTheme(el.dataset.setTheme);
+            if (el.dataset.setAccent) window.setAccent(el.dataset.setAccent);
+            close();
+          });
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

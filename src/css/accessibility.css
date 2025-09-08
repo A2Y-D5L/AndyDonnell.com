@@ -1,0 +1,63 @@
+/* ========= Accessibility & Motion Preferences ========= */
+
+/* ---------------- Reduced motion preferences ---------------- */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .magnet {
+    transform: none !important;
+  }
+  
+  [data-animate="fade-up"] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ---------------- Screen reader only content ---------------- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.focus\:not-sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* ---------------- Focus management ---------------- */
+.outline-none:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+/* ---------------- High contrast mode support ---------------- */
+@media (prefers-contrast: high) {
+  :root {
+    --border: #000000;
+    --accent: #0000ff;
+  }
+  
+  html[data-theme="dark"] {
+    --border: #ffffff;
+    --accent: #00ffff;
+  }
+}

@@ -1,0 +1,35 @@
+/* ========= Animation & Motion ========= */
+
+/* ---------------- Magnetic hover effect ---------------- */
+.magnet {
+  transform: translate(var(--tx, 0), var(--ty, 0));
+  will-change: transform;
+  transition: transform 150ms ease;
+}
+
+/* ---------------- Fade-up animation states ---------------- */
+[data-animate="fade-up"] {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: all 500ms ease-out;
+  will-change: transform, opacity;
+}
+
+[data-animate="fade-up"].animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------------- Blink animation for cursor ---------------- */
+@keyframes blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+.animate-blink {
+  animation: blink 1.2s step-end infinite;
+}
