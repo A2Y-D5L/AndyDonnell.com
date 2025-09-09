@@ -121,41 +121,81 @@ export class ContentLoader {
 
   loadSocialLinks() {
     const socialContainer = document.getElementById('social-links');
-    if (!socialContainer) return;
+    if (!socialContainer) {
+      console.log('ℹ️ Social links container not found - skipping (might be hardcoded)');
+      return;
+    }
 
-    const socialHTML = this.renderer.renderSocialLinks();
-    socialContainer.innerHTML = socialHTML;
+    try {
+      const socialHTML = this.renderer.renderSocialLinks();
+      socialContainer.innerHTML = socialHTML;
+      console.log('✅ Social links loaded');
+    } catch (error) {
+      console.error('❌ Failed to load social links:', error);
+    }
   }
 
   loadProjects() {
     const projectsContainer = document.getElementById('proj-grid');
     const filtersContainer = document.getElementById('filter-chips');
+    const projectsTitle = document.getElementById('projects-title');
     
-    if (!projectsContainer) return;
+    if (!projectsContainer) {
+      console.warn('⚠️ Projects container not found');
+      return;
+    }
 
-    // Load project cards
-    const projectsHTML = projects.map((project, index) =>
-      this.renderer.renderProjectCard(project, index * 80)
-    ).join('');
+    try {
+      // Update section title
+      if (projectsTitle) {
+        projectsTitle.textContent = content.projects.title;
+      }
 
-    projectsContainer.innerHTML = projectsHTML;
+      // Load project cards
+      const projectsHTML = projects.map((project, index) =>
+        this.renderer.renderProjectCard(project, index * 80)
+      ).join('');
 
-    // Load filter chips
-    if (filtersContainer) {
-      const filtersHTML = this.renderer.renderFilterChips();
-      filtersContainer.innerHTML = filtersHTML;
+      projectsContainer.innerHTML = projectsHTML;
+      console.log('✅ Project cards loaded');
+
+      // Load filter chips
+      if (filtersContainer) {
+        const filtersHTML = this.renderer.renderFilterChips();
+        filtersContainer.innerHTML = filtersHTML;
+        console.log('✅ Filter chips loaded');
+      } else {
+        console.warn('⚠️ Filter chips container not found');
+      }
+    } catch (error) {
+      console.error('❌ Failed to load projects:', error);
     }
   }
 
   loadBlog() {
     const blogContainer = document.getElementById('blog-posts');
-    if (!blogContainer) return;
+    const blogTitle = document.getElementById('blog-title');
+    
+    if (!blogContainer) {
+      console.warn('⚠️ Blog container not found');
+      return;
+    }
 
-    const blogHTML = blogPosts.map((post, index) => 
-      this.renderer.renderBlogCard(post, index * 80)
-    ).join('');
+    try {
+      // Update section title
+      if (blogTitle) {
+        blogTitle.textContent = content.blog.title;
+      }
 
-    blogContainer.innerHTML = blogHTML;
+      const blogHTML = blogPosts.map((post, index) => 
+        this.renderer.renderBlogCard(post, index * 80)
+      ).join('');
+
+      blogContainer.innerHTML = blogHTML;
+      console.log('✅ Blog posts loaded');
+    } catch (error) {
+      console.error('❌ Failed to load blog posts:', error);
+    }
   }
 
   loadContactContent() {

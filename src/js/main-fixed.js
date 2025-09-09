@@ -26,6 +26,7 @@ class App {
     try {
       // Remove no-js class to indicate JavaScript is working
       document.body.classList.remove('no-js');
+      console.log('🚀 App init starting...');
       
       // Phase 1: Initialize animation controller FIRST to hide elements before content loads
       console.log('🎬 Initializing animation controller...');
@@ -34,8 +35,15 @@ class App {
       
       // Phase 2: Load content after animations are set up
       console.log('🚀 Loading content...');
-      const contentLoader = new ContentLoader();
-      this.controllers.set('contentLoader', contentLoader);
+      try {
+        const contentLoader = new ContentLoader();
+        this.controllers.set('contentLoader', contentLoader);
+        console.log('✅ ContentLoader created and initialized');
+      } catch (contentError) {
+        console.error('❌ ContentLoader failed:', contentError);
+        console.error('Stack trace:', contentError.stack);
+        throw contentError;
+      }
       
       // Listen for content loaded event to refresh animations
       document.addEventListener('content:loaded', () => {
@@ -57,35 +65,31 @@ class App {
   }
 
   initInteractiveControllers() {
-    // Add a small delay to ensure DOM content has been populated
-    setTimeout(() => {
-      // Initialize theme controller (independent of content)
-      console.log('🎨 Initializing theme controller...');
-      this.controllers.set('theme', new ThemeController());
-      console.log('✅ Theme controller initialized');
+    // Initialize content-independent controllers immediately
+    console.log('🎨 Initializing theme controller...');
+    this.controllers.set('theme', new ThemeController());
+    console.log('✅ Theme controller initialized');
 
-      // Initialize scrollspy controller  
-      console.log('🧭 Initializing scrollspy controller...');
-      this.controllers.set('scrollspy', new ScrollspyController());
-      console.log('✅ Scrollspy controller initialized');
+    console.log('🧭 Initializing scrollspy controller...');
+    this.controllers.set('scrollspy', new ScrollspyController());
+    console.log('✅ Scrollspy controller initialized');
 
-      // Initialize project controller (depends on project DOM elements)
-      console.log('💼 Initializing project controller...');
+    console.log('⌨️ Initializing command palette...');
+    this.controllers.set('commandPalette', new CommandPalette());
+    console.log('✅ Command palette initialized');
+
+    console.log('🎯 Initializing focus manager...');
+    this.controllers.set('focus', new FocusManager());
+    console.log('✅ Focus manager initialized');
+
+    // Initialize content-dependent controllers after content loads
+    document.addEventListener('content:loaded', () => {
+      console.log('💼 Initializing project controller after content load...');
       this.controllers.set('projects', new ProjectController());
       console.log('✅ Project controller initialized');
-
-      // Initialize command palette
-      console.log('⌨️ Initializing command palette...');
-      this.controllers.set('commandPalette', new CommandPalette());
-      console.log('✅ Command palette initialized');
-
-      // Initialize focus manager
-      console.log('🎯 Initializing focus manager...');
-      this.controllers.set('focus', new FocusManager());
-      console.log('✅ Focus manager initialized');
-
-      console.log('🎉 All interactive controllers initialized');
-    }, 50); // Small delay to ensure content is loaded
+      
+      console.log('🎉 All controllers initialized');
+    });
   }
 
   // Cleanup method for destroying controllers

@@ -28,6 +28,27 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+  <!-- =========================================================
+       Pre-paint theme bootstrap to prevent FOUC (no flashes)
+       - Reads saved prefs and sets data-* before first paint
+       ========================================================= -->
+  <script>
+  (function () {
+    try {
+      const d = document.documentElement;
+      const THEME_KEY = 'theme-preference';
+      const ACCENT_KEY = 'accent-preference';
+      const savedTheme  = localStorage.getItem(THEME_KEY)  || d.getAttribute('data-theme')  || 'system';
+      const savedAccent = localStorage.getItem(ACCENT_KEY) || d.getAttribute('data-accent') || 'default';
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      d.setAttribute('data-theme', savedTheme);
+      d.dataset.themeEffective = (savedTheme === 'system') ? (prefersDark ? 'dark' : 'light') : savedTheme;
+      d.setAttribute('data-accent', savedAccent);
+    } catch {}
+  })();
+  </script>
+
   <!-- Tailwind CSS (CDN for now) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -104,9 +125,31 @@
       * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
     }
 
+    /* Chips / Badges (tokenized + gamut safety) */
     .chip { border-radius:9999px; border:1px solid var(--border); background:var(--card); padding:0.375rem 0.75rem; font-size:0.75rem; font-weight:500; color:var(--fg); cursor:pointer }
     .chip:hover { background: rgba(0,0,0,0.03); }
     .chip.active { border-color: var(--accent); color: var(--accent); background: rgba(0,0,0,0.02); }
+
+    /* Prefer color-mix when supported */
+    @supports (color: color-mix(in oklab, white, black)) {
+      .chip:hover { background: color-mix(in oklab, var(--card) 92%, var(--fg)); }
+      .chip.active {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: color-mix(in oklab, var(--accent) 10%, var(--card));
+      }
+    }
+
+    .badge { border-radius:0.375rem; background: rgba(0,0,0,0.04); padding:0.25rem 0.5rem; font-size:0.6875rem; font-weight:500; color:var(--muted); border:1px solid var(--border); }
+    .project-card:hover .badge { background: rgba(0,0,0,0.03); border-color: var(--border); color: var(--accent); }
+    @supports (color: color-mix(in oklab, white, black)) {
+      .badge { background: color-mix(in oklab, var(--card) 92%, var(--fg)); }
+      .project-card:hover .badge {
+        background: color-mix(in oklab, var(--accent) 10%, var(--card));
+        border-color: color-mix(in oklab, var(--accent) 30%, var(--border));
+        color: var(--accent);
+      }
+    }
 
     .badge { border-radius:0.375rem; background: rgba(0,0,0,0.04); padding:0.25rem 0.5rem; font-size:0.6875rem; font-weight:500; color:var(--muted); border:1px solid var(--border); }
     .project-card:hover .badge { background: rgba(0,0,0,0.03); border-color: var(--border); color: var(--accent); }
@@ -130,6 +173,9 @@
 
     .project-card { background: var(--card); border-color: var(--border); }
     .header-surface { background-color: rgba(255,255,255,0.8); backdrop-filter: blur(8px); }
+    @supports (color: color-mix(in oklab, white, black)) {
+      .header-surface { background-color: color-mix(in oklab, var(--card) 80%, transparent); }
+    }
     .magnet { transform: translate(var(--tx, 0), var(--ty, 0)); will-change: transform; }
     
     /* Prevent flash of animated content before JavaScript loads */
@@ -145,7 +191,13 @@
       transform: translateY(0) !important;
     }
     
-    /* Fallback: show content after 2 seconds regardless of animation state */
+    /* Show content when loaded */
+    body[data-content-loaded="true"] [data-animate="fade-up"] {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* Fallback: show content after 3 seconds regardless of animation state */
     .content-timeout [data-animate="fade-up"] {
       opacity: 1 !important;
       transform: translateY(0) !important;
@@ -219,7 +271,25 @@
             View Resume
           </a>
 
-          <div id="social-links" class="flex items-center gap-2"></div>
+          <a href="https://github.com/A2Y-D5L" aria-label="GitHub"
+             class="p-2 rounded transition-colors duration-150 hover:bg-neutral-100 group" target="_blank" rel="noopener noreferrer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-neutral-600 group-hover:text-accent-600 transition-colors" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M12 2C6.475 2 2 6.59 2 12.253c0 4.52 2.865 8.354 6.839 9.708.5.095.683-.223.683-.498 0-.245-.009-.895-.014-1.756-2.782.616-3.369-1.37-3.369-1.37-.455-1.176-1.11-1.49-1.11-1.49-.907-.64.069-.627.069-.627 1.004.072 1.532 1.06 1.532 1.06.892 1.567 2.341 1.115 2.91.852.091-.663.35-1.116.636-1.372-2.22-.259-4.555-1.139-4.555-5.071 0-1.12.39-2.036 1.029-2.754-.103-.259-.446-1.302.098-2.714 0 0 .841-.275 2.756 1.052a9.27 9.27 0 0 1 2.51-.344c.851.004 1.707.118 2.51.344 1.915-1.327 2.755-1.052 2.755-1.052.546 1.412.203 2.455.1 2.714.64.718 1.028 1.634 1.028 2.754 0 3.942-2.338 4.81-4.565 5.066.36.327.682.97.682 1.954 0 1.41-.013 2.547-.013 2.894 0 .276.18.597.69.496C19.14 20.604 22 16.77 22 12.252 22 6.59 17.523 2 12 2Z" clip-rule="evenodd"/>
+            </svg>
+          </a>
+
+          <a href="https://www.linkedin.com/in/andydonnell" aria-label="LinkedIn"
+             class="p-2 rounded transition-colors duration-150 hover:bg-neutral-100 group" target="_blank" rel="noopener noreferrer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-neutral-600 group-hover:text-accent-600 transition-colors" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M20.452 20.452h-3.554v-5.569c0-1.328-.027-3.036-1.85-3.036-1.852 0-2.135 1.445-2.135 2.939v5.666H9.36V9h3.414v1.561h.048c.476-.901 1.636-1.85 3.366-1.85 3.6 0 4.265 2.37 4.265 5.455v6.286ZM5.337 7.433a2.062 2.062 0 1 1 0-4.124 2.062 2.062 0 0 1 0 4.124ZM7.114 20.452H3.56V9h3.554v11.452Z"/>
+            </svg>
+          </a>
+
+          <a href="#blog" aria-label="Blog" class="p-2 rounded transition-colors duration-150 hover:bg-neutral-100 group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-neutral-600 group-hover:text-accent-600 transition-colors" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M4 5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5zm10 0v3h3" />
+            </svg>
+          </a>
         </div>
       </div>
     </section>
@@ -337,6 +407,6 @@
   </script>
 
   <!-- Main Application Script -->
-  <script type="module" src="/src/js/main.js"></script>
+  <script type="module" src="/src/js/main-fixed.js"></script>
 </body>
 </html>

@@ -17,7 +17,7 @@ export class TemplateRenderer {
   }
 
   // Render project card HTML
-  renderProjectCard(project) {
+  renderProjectCard(project, delay = 0) {
     const badgeHTML = project.tags.map(tag => 
       `<li class="badge">${this.capitalize(tag)}</li>`
     ).join('');
@@ -29,6 +29,7 @@ export class TemplateRenderer {
     return `
       <article class="project-card group rounded-lg border border-neutral-200 bg-white p-0 shadow-card transition hover:-translate-y-0.5 hover:shadow-lg opacity-0 translate-y-3 will-change-transform magnet"
                data-animate="fade-up" 
+               data-animate-delay="${delay}"
                data-tags="${project.tags.join(' ')}"
                data-title="${project.title}"
                data-updated="${project.updated}"
@@ -74,6 +75,17 @@ export class TemplateRenderer {
   renderSkillsList() {
     return this.data.site.skills.map(skill => 
       `<li>${skill}</li>`
+    ).join('');
+  }
+
+  // Render social links
+  renderSocialLinks() {
+    return this.data.navigation.social.map(link => 
+      `<a href="${link.href}" ${link.href.startsWith('http') ? 'target="_blank" rel="noopener noreferrer"' : ''} 
+         class="inline-flex items-center justify-center rounded-md border border-neutral-300 bg-white text-neutral-900 px-3 py-1.5 text-xs transition-all duration-150 hover:bg-neutral-50 hover:shadow-sm hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-accent-600/30 active:translate-y-0 magnet"
+         aria-label="${link.ariaLabel}">
+        ${link.name}
+      </a>`
     ).join('');
   }
 
